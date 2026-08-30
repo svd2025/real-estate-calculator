@@ -179,7 +179,7 @@
         <div class="row-2">
           <div class="form-group">
             <label for="buildingSelect">Building</label>
-            <select id="buildingSelect" onchange="populateFlatDropdown()">
+            <select id="buildingSelect" onchange="onBuildingChange()">
               <option value="A1">A1</option>
               <option value="B1">B1</option>
               <option value="C1">C1</option>
@@ -207,7 +207,7 @@
           </div>
         </div>
 
-        <div class="row-2">
+        <div class="row-3">
           <div class="form-group">
             <label for="ratePerSqFt">Rate / sq ft (₹)</label>
             <input type="number" id="ratePerSqFt" placeholder="0" value="0" />
@@ -218,6 +218,10 @@
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label for="totalFloorRise">Total Floor Rise</label>
+            <input type="number" id="totalFloorRise" readonly />
           </div>
         </div>
       </div>
@@ -230,8 +234,12 @@
             <strong id="outTotalArea">0 sq ft</strong>
           </div>
           <div class="summary-row">
-            <span>Effective Rate / sq ft:</span>
-            <strong id="outEffectiveRate">₹ 0</strong>
+            <span>Base Cost:</span>
+            <strong id="outBaseCost">₹ 0</strong>
+          </div>
+          <div class="summary-row">
+            <span>Total Floor Rise:</span>
+            <strong id="outFloorRise">₹ 0</strong>
           </div>
           <div class="summary-row total">
             <span>Final Total:</span>
@@ -358,6 +366,19 @@
       }
     };
 
+    function onBuildingChange() {
+      const bldg = document.getElementById('buildingSelect').value;
+      
+      // Auto-set Floor Rise rate: D1 -> 100, others -> 50
+      if (bldg === 'D1') {
+        document.getElementById('floorRise').value = "100";
+      } else {
+        document.getElementById('floorRise').value = "50";
+      }
+
+      populateFlatDropdown();
+    }
+
     function populateFlatDropdown() {
       const bldg = document.getElementById('buildingSelect').value;
       const flatSelect = document.getElementById('flatSelect');
@@ -387,16 +408,27 @@
       const baseArea = parseFloat(document.getElementById('baseArea').value) || 0;
       const balconyArea = parseFloat(document.getElementById('balconyArea').value) || 0;
       const rate = parseFloat(document.getElementById('ratePerSqFt').value) || 0;
-      const floorRise = parseFloat(document.getElementById('floorRise').value) || 0;
+      const floorRiseRate = parseFloat(document.getElementById('floorRise').value) || 0;
+      const flatNumber = document.getElementById('flatSelect').value || "101";
 
       const totalArea = baseArea + balconyArea;
       document.getElementById('totalAreaInput').value = totalArea;
 
-      const effectiveRate = rate + floorRise;
-      const finalTotal = totalArea * effectiveRate;
+      // Determine Floor Number (e.g. 1101 -> Floor 11, 201 -> Floor 2, 101 -> Floor 1)
+      const flatInt = parseInt(flatNumber, 10);
+      const floorNo = Math.floor(flatInt / 100);
+
+      // Floor Rise starts from 2nd Floor (Floor - 1)
+      const floorMultiplier = floorNo > 1 ? (floorNo - 1) : 0;
+      const totalFloorRiseVal = floorMultiplier * floorRiseRate;
+      document.getElementById('totalFloorRise').value = totalFloorRiseVal;
+
+      const baseCost = totalArea * rate;
+      const finalTotal = baseCost + totalFloorRiseVal;
 
       document.getElementById('outTotalArea').innerText = totalArea.toLocaleString('en-IN') + ' sq ft';
-      document.getElementById('outEffectiveRate').innerText = '₹ ' + effectiveRate.toLocaleString('en-IN') + ' / sq ft';
+      document.getElementById('outBaseCost').innerText = '₹ ' + baseCost.toLocaleString('en-IN');
+      document.getElementById('outFloorRise').innerText = '₹ ' + totalFloorRiseVal.toLocaleString('en-IN');
       document.getElementById('outFinalTotal').innerText = '₹ ' + finalTotal.toLocaleString('en-IN');
     }
 
@@ -414,7 +446,7 @@
     }
 
     window.onload = function() {
-      populateFlatDropdown();
+      onBuildingChange();
     };
   </script>
 </body>
