@@ -238,8 +238,8 @@
             <strong id="outBaseCost">₹ 0</strong>
           </div>
           <div class="summary-row">
-            <span>Total Floor Rise:</span>
-            <strong id="outFloorRise">₹ 0</strong>
+            <span>Total Floor Rise Cost:</span>
+            <strong id="outFloorRiseCost">₹ 0</strong>
           </div>
           <div class="summary-row total">
             <span>Final Total:</span>
@@ -368,14 +368,11 @@
 
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
-      
-      // Auto-set Floor Rise rate: D1 -> 100, others -> 50
       if (bldg === 'D1') {
         document.getElementById('floorRise').value = "100";
       } else {
         document.getElementById('floorRise').value = "50";
       }
-
       populateFlatDropdown();
     }
 
@@ -414,25 +411,25 @@
       const totalArea = baseArea + balconyArea;
       document.getElementById('totalAreaInput').value = totalArea;
 
-      // Determine Floor Number (e.g. 1101 -> Floor 11, 201 -> Floor 2, 101 -> Floor 1)
+      // Extract floor number (e.g. 1301 -> Floor 13)
       const flatInt = parseInt(flatNumber, 10);
       const floorNo = Math.floor(flatInt / 100);
 
       // Floor Rise starts from 2nd Floor (Floor - 1)
       const floorMultiplier = floorNo > 1 ? (floorNo - 1) : 0;
-      const totalFloorRiseVal = floorMultiplier * floorRiseRate;
-      document.getElementById('totalFloorRise').value = totalFloorRiseVal;
+      const totalFloorRisePerSqFt = floorMultiplier * floorRiseRate;
+      document.getElementById('totalFloorRise').value = totalFloorRisePerSqFt;
 
       const baseCost = totalArea * rate;
-      const finalTotal = baseCost + totalFloorRiseVal;
+      const totalFloorRiseCost = totalFloorRisePerSqFt * totalArea;
+      const finalTotal = baseCost + totalFloorRiseCost;
 
       document.getElementById('outTotalArea').innerText = totalArea.toLocaleString('en-IN') + ' sq ft';
       document.getElementById('outBaseCost').innerText = '₹ ' + baseCost.toLocaleString('en-IN');
-      document.getElementById('outFloorRise').innerText = '₹ ' + totalFloorRiseVal.toLocaleString('en-IN');
+      document.getElementById('outFloorRiseCost').innerText = '₹ ' + totalFloorRiseCost.toLocaleString('en-IN');
       document.getElementById('outFinalTotal').innerText = '₹ ' + finalTotal.toLocaleString('en-IN');
     }
 
-    // Attach real-time calculation listeners
     ['baseArea', 'balconyArea', 'ratePerSqFt'].forEach(id => {
       document.getElementById(id).addEventListener('input', calculate);
     });
