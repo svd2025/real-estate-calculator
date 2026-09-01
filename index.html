@@ -12,6 +12,8 @@
       --text-color: #202124;
       --border-color: #dadce0;
       --accent-green: #34a853;
+      --btn-danger: #d93025;
+      --btn-danger-hover: #b3261e;
     }
 
     * {
@@ -134,6 +136,24 @@
       margin-bottom: 0;
     }
 
+    .clear-btn {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--btn-danger);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: background-color 0.2s ease;
+    }
+
+    .clear-btn:hover {
+      background-color: var(--btn-danger-hover);
+    }
+
     .tabs {
       display: flex;
       margin-bottom: 12px;
@@ -247,6 +267,8 @@
           </div>
         </div>
       </div>
+
+      <button class="clear-btn" onclick="resetToDefault()">CLEAR</button>
     </div>
 
     <!-- TAB 2: CLIENT DETAILS -->
@@ -411,11 +433,9 @@
       const totalArea = baseArea + balconyArea;
       document.getElementById('totalAreaInput').value = totalArea;
 
-      // Extract floor number (e.g. 1301 -> Floor 13)
       const flatInt = parseInt(flatNumber, 10);
       const floorNo = Math.floor(flatInt / 100);
 
-      // Floor Rise starts from 2nd Floor (Floor - 1)
       const floorMultiplier = floorNo > 1 ? (floorNo - 1) : 0;
       const totalFloorRisePerSqFt = floorMultiplier * floorRiseRate;
       document.getElementById('totalFloorRise').value = totalFloorRisePerSqFt;
@@ -428,6 +448,16 @@
       document.getElementById('outBaseCost').innerText = '₹ ' + baseCost.toLocaleString('en-IN');
       document.getElementById('outFloorRiseCost').innerText = '₹ ' + totalFloorRiseCost.toLocaleString('en-IN');
       document.getElementById('outFinalTotal').innerText = '₹ ' + finalTotal.toLocaleString('en-IN');
+    }
+
+    function resetToDefault() {
+      document.getElementById('buildingSelect').value = 'A1';
+      document.getElementById('ratePerSqFt').value = 0;
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientPhone').value = '';
+      document.getElementById('visitStatus').value = 'Follow-up Required';
+      document.getElementById('notes').value = '';
+      onBuildingChange();
     }
 
     ['baseArea', 'balconyArea', 'ratePerSqFt'].forEach(id => {
