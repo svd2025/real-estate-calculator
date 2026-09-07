@@ -57,11 +57,50 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
     .card h2 {
       font-size: 1.1rem;
-      margin-bottom: 12px;
       color: var(--primary-color);
     }
+
+    /* LEGEND BADGES AT TOP-RIGHT */
+    .color-legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f1f3f4;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid #dadce0;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .legend-box.grey { background-color: #5f6368; }
+    .legend-box.blue { background-color: #1a73e8; }
+    .legend-box.orange { background-color: #ff9800; }
 
     .form-group {
       margin-bottom: 12px;
@@ -287,7 +326,7 @@
     }
 
     .badge-normal {
-      background-color: #5f6368; /* Gray for Normal */
+      background-color: #5f6368; /* Grey for Normal */
     }
 
     .flat-badge .remove-flat {
@@ -471,7 +510,16 @@
 
       <!-- CARD 2: PAST CUSTOMER DATABASE & SEARCH -->
       <div class="card">
-        <h2>Past Customer Database & Live Call Log</h2>
+        <div class="card-header-flex">
+          <h2>Past Customer Database & Live Call Log</h2>
+          <!-- COLOR LEGEND TOP RIGHT -->
+          <div class="color-legend">
+            <span class="legend-item"><span class="legend-box grey"></span> Grey - Normal Flat</span>
+            <span class="legend-item"><span class="legend-box blue"></span> Blue - Flat with Extra Balcony</span>
+            <span class="legend-item"><span class="legend-box orange"></span> Orange - Pent House</span>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Type, Status, Date)</label>
           <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, type, date..." />
