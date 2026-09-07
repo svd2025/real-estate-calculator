@@ -240,6 +240,61 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
+    /* Multi Flat Selection Badges */
+    .flat-selector-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-add-flat {
+      padding: 10px 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .selected-flats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    /* Color Badges */
+    .flat-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: white;
+      gap: 4px;
+    }
+
+    .badge-penthouse {
+      background-color: #ff9800; /* Orange for Penthouse */
+    }
+
+    .badge-balcony {
+      background-color: #1a73e8; /* Blue for Extra Balcony */
+    }
+
+    .badge-normal {
+      background-color: #5f6368; /* Gray for Normal */
+    }
+
+    .flat-badge .remove-flat {
+      cursor: pointer;
+      font-weight: normal;
+      margin-left: 4px;
+    }
   </style>
 </head>
 <body>
@@ -365,8 +420,13 @@
 
         <div class="row-2">
           <div class="form-group">
-            <label for="business">Business</label>
-            <input type="text" id="business" placeholder="e.g. Textile / Diamond" />
+            <label for="businessSelect">Business</label>
+            <select id="businessSelect" onchange="toggleCustomBusiness()">
+              <option value="Diamond">Diamond</option>
+              <option value="Textile">Textile</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" id="customBusiness" placeholder="Enter custom business name" style="display: none; margin-top: 6px;" />
           </div>
           <div class="form-group">
             <label for="moNo">Mo No (Mobile)</label>
@@ -389,9 +449,20 @@
           </div>
         </div>
 
+        <!-- MULTI FLAT PREFERENCE SELECTOR -->
         <div class="form-group">
-          <label for="flatInquired">Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
-          <input type="text" id="flatInquired" placeholder="e.g. A1 - 1301" />
+          <label>Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
+          <div class="flat-selector-box">
+            <select id="prefWingSelect" style="flex: 1;" onchange="populatePrefFlatDropdown()">
+              <option value="A1">A1</option>
+              <option value="B1">B1</option>
+              <option value="C1">C1</option>
+              <option value="D1">D1</option>
+            </select>
+            <select id="prefFlatSelect" style="flex: 1;"></select>
+            <button type="button" class="btn-add-flat" onclick="addSelectedFlatPreference()">+ Add Flat</button>
+          </div>
+          <div id="selectedFlatsList" class="selected-flats-container"></div>
         </div>
 
         <div class="form-group">
@@ -424,6 +495,7 @@
               <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Business</th>
                 <th>Mo No</th>
                 <th>Gaam</th>
                 <th>Live Status Update</th>
@@ -446,110 +518,67 @@
   <script>
     const inventory = {
       "A1": {
-        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},
-        "201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
-        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},
-        "401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
-        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},
-        "601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
-        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},
-        "801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
-        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},
-        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
-        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
-        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
-        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
-        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
-        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
-        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
-        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
-        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
+        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},"1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
+        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},"1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
+        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},"1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
+        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},"1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
         "2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
       },
       "B1": {
-        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},
-        "201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
-        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},
-        "401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
-        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},
-        "601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
-        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},
-        "801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
-        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},
-        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
-        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
-        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
-        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
-        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
-        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
-        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
-        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
-        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
+        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},"1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
+        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},"1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
+        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},"1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
+        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},"1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
         "2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
       },
       "C1": {
-        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},
-        "201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
-        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},
-        "401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
-        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},
-        "601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
-        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},
-        "801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
-        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},
-        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
-        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
-        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
-        "1401":{base:2700,balcony:173},"1402":{base:2700,balcony:0},
-        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
-        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
-        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
-        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
-        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
+        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},"1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},
+        "1401":{base:2700,balcony:173},"1402":{base:2700,balcony:0},"1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},
+        "1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},"1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},
+        "1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},"1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},
         "2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
       },
       "D1": {
-        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},
-        "201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
-        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},
-        "401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
-        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},
-        "601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
-        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},
-        "801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
-        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},
-        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
-        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
-        "1301":{base:2700,balcony:0},"1302":{base:2700,balcony:0},
-        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
-        "1501":{base:2700,balcony:95},"1502":{base:2700,balcony:95},
-        "1601":{base:2700,balcony:0},"1602":{base:2700,balcony:0},
-        "1701":{base:2700,balcony:60},"1702":{base:2700,balcony:60},
-        "1801":{base:2700,balcony:0},"1802":{base:2700,balcony:0},
-        "1901":{base:2700,balcony:71},"1902":{base:2700,balcony:71},
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},
+        "1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},"1301":{base:2700,balcony:0},"1302":{base:2700,balcony:0},
+        "1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},"1501":{base:2700,balcony:95},"1502":{base:2700,balcony:95},
+        "1601":{base:2700,balcony:0},"1602":{base:2700,balcony:0},"1701":{base:2700,balcony:60},"1702":{base:2700,balcony:60},
+        "1801":{base:2700,balcony:0},"1802":{base:2700,balcony:0},"1901":{base:2700,balcony:71},"1902":{base:2700,balcony:71},
         "2001":{base:4716,balcony:0},"2002":{base:4716,balcony:0}
       }
     };
 
     const statusOptions = [
-      "Call Busy",
-      "Call Cut",
-      "Follow-up Required",
-      "Visit Scheduled",
-      "Rubru Aavshe",
-      "Not Interested",
-      "Ganatri Nathi"
+      "Call Busy", "Call Cut", "Follow-up Required",
+      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
     ];
 
     let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
+    let currentSelectedFlats = [];
 
+    /* CALCULATOR FUNCTIONS */
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
-      if (bldg === 'D1') {
-        document.getElementById('floorRise').value = "100";
-      } else {
-        document.getElementById('floorRise').value = "50";
-      }
+      document.getElementById('floorRise').value = (bldg === 'D1') ? "100" : "50";
       populateFlatDropdown();
     }
 
@@ -558,8 +587,7 @@
       const flatSelect = document.getElementById('flatSelect');
       flatSelect.innerHTML = '';
       
-      const flats = Object.keys(inventory[bldg]);
-      flats.forEach(f => {
+      Object.keys(inventory[bldg]).forEach(f => {
         const opt = document.createElement('option');
         opt.value = f;
         opt.innerText = f;
@@ -588,9 +616,7 @@
       const totalArea = baseArea + balconyArea;
       document.getElementById('totalAreaInput').value = totalArea;
 
-      const flatInt = parseInt(flatNumber, 10);
-      const floorNo = Math.floor(flatInt / 100);
-
+      const floorNo = Math.floor(parseInt(flatNumber, 10) / 100);
       const floorMultiplier = floorNo > 1 ? (floorNo - 1) : 0;
       const totalFloorRisePerSqFt = floorMultiplier * floorRiseRate;
       document.getElementById('totalFloorRise').value = totalFloorRisePerSqFt;
@@ -611,8 +637,89 @@
       onBuildingChange();
     }
 
-    /* CLIENT MANAGER LOGIC */
+    /* CLIENT FORM LOGIC */
+    function toggleCustomBusiness() {
+      const select = document.getElementById('businessSelect');
+      const customInput = document.getElementById('customBusiness');
+      if (select.value === 'Other') {
+        customInput.style.display = 'block';
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+      }
+    }
+
+    function populatePrefFlatDropdown() {
+      const bldg = document.getElementById('prefWingSelect').value;
+      const prefFlatSelect = document.getElementById('prefFlatSelect');
+      prefFlatSelect.innerHTML = '';
+
+      Object.keys(inventory[bldg]).forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.innerText = f;
+        prefFlatSelect.appendChild(opt);
+      });
+    }
+
+    function addSelectedFlatPreference() {
+      const wing = document.getElementById('prefWingSelect').value;
+      const flat = document.getElementById('prefFlatSelect').value;
+      const itemStr = `${wing} - ${flat}`;
+
+      if (!currentSelectedFlats.includes(itemStr)) {
+        currentSelectedFlats.push(itemStr);
+        renderSelectedFlatBadges();
+      }
+    }
+
+    function removeFlatPreference(flatStr) {
+      currentSelectedFlats = currentSelectedFlats.filter(f => f !== flatStr);
+      renderSelectedFlatBadges();
+    }
+
+    function renderSelectedFlatBadges() {
+      const container = document.getElementById('selectedFlatsList');
+      container.innerHTML = '';
+      currentSelectedFlats.forEach(fStr => {
+        const badge = document.createElement('span');
+        const badgeType = getFlatBadgeType(fStr);
+        badge.className = `flat-badge ${badgeType.className}`;
+        badge.innerHTML = `${fStr} <span class="remove-flat" onclick="removeFlatPreference('${fStr}')">&times;</span>`;
+        container.appendChild(badge);
+      });
+    }
+
+    function getFlatBadgeType(flatStr) {
+      // flatStr format: "A1 - 2001"
+      const parts = flatStr.split(' - ');
+      if (parts.length === 2) {
+        const wing = parts[0].trim();
+        const flat = parts[1].trim();
+
+        if (flat === '2001' || flat === '2002') {
+          return { className: 'badge-penthouse', label: 'Penthouse' };
+        }
+        if (inventory[wing] && inventory[wing][flat] && inventory[wing][flat].balcony > 0) {
+          return { className: 'badge-balcony', label: 'Extra Balcony' };
+        }
+      }
+      return { className: 'badge-normal', label: 'Normal' };
+    }
+
+    function setDefaultVisitingDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('visitingDate').value = today;
+    }
+
     function submitClientRecord() {
+      const busSelect = document.getElementById('businessSelect').value;
+      let finalBusiness = busSelect;
+      if (busSelect === 'Other') {
+        const customVal = document.getElementById('customBusiness').value.trim();
+        finalBusiness = customVal !== '' ? customVal : 'Other';
+      }
+
       const record = {
         id: Date.now(),
         firstName: document.getElementById('firstName').value.trim(),
@@ -620,11 +727,11 @@
         gaam: document.getElementById('gaam').value.trim(),
         taluka: document.getElementById('taluka').value.trim(),
         district: document.getElementById('district').value.trim(),
-        business: document.getElementById('business').value.trim(),
+        business: finalBusiness,
         moNo: document.getElementById('moNo').value.trim(),
         visitingDate: document.getElementById('visitingDate').value,
         partyType: document.getElementById('partyType').value,
-        flatInquired: document.getElementById('flatInquired').value.trim(),
+        flatsInquired: [...currentSelectedFlats],
         status: document.getElementById('statusSelect').value
       };
 
@@ -637,9 +744,14 @@
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
       
       // Clear inputs
-      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'business', 'moNo', 'visitingDate', 'flatInquired'].forEach(id => {
+      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'moNo'].forEach(id => {
         document.getElementById(id).value = '';
       });
+      document.getElementById('businessSelect').value = 'Diamond';
+      toggleCustomBusiness();
+      currentSelectedFlats = [];
+      renderSelectedFlatBadges();
+      setDefaultVisitingDate();
 
       renderClientTable();
       alert('Client record saved successfully!');
@@ -650,33 +762,47 @@
       const tbody = document.getElementById('clientTableBody');
       tbody.innerHTML = '';
 
-      const filtered = clientRecords.filter(c => 
-        (c.firstName && c.firstName.toLowerCase().includes(query)) ||
-        (c.lastName && c.lastName.toLowerCase().includes(query)) ||
-        (c.moNo && c.moNo.includes(query)) ||
-        (c.gaam && c.gaam.toLowerCase().includes(query)) ||
-        (c.status && c.status.toLowerCase().includes(query)) ||
-        (c.visitingDate && c.visitingDate.toLowerCase().includes(query))
-      );
+      const filtered = clientRecords.filter(c => {
+        const flatText = (c.flatsInquired || []).join(' ');
+        return (c.firstName && c.firstName.toLowerCase().includes(query)) ||
+               (c.lastName && c.lastName.toLowerCase().includes(query)) ||
+               (c.business && c.business.toLowerCase().includes(query)) ||
+               (c.moNo && c.moNo.includes(query)) ||
+               (c.gaam && c.gaam.toLowerCase().includes(query)) ||
+               (c.status && c.status.toLowerCase().includes(query)) ||
+               (c.visitingDate && c.visitingDate.toLowerCase().includes(query)) ||
+               (flatText.toLowerCase().includes(query));
+      });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No client records found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No client records found</td></tr>';
         return;
       }
 
       filtered.forEach(c => {
         const tr = document.createElement('tr');
         
-        // Build status dropdown options
         let statusOptionsHtml = '';
         statusOptions.forEach(opt => {
           const selected = (c.status === opt) ? 'selected' : '';
           statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
         });
 
+        // Formatted Flat Badges for Table
+        let flatBadgesHtml = '';
+        if (c.flatsInquired && c.flatsInquired.length > 0) {
+          c.flatsInquired.forEach(fStr => {
+            const bInfo = getFlatBadgeType(fStr);
+            flatBadgesHtml += `<span class="flat-badge ${bInfo.className}">${fStr}</span> `;
+          });
+        } else {
+          flatBadgesHtml = '-';
+        }
+
         tr.innerHTML = `
           <td>${c.firstName || '-'}</td>
           <td>${c.lastName || '-'}</td>
+          <td>${c.business || '-'}</td>
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
           <td>
@@ -685,7 +811,7 @@
             </select>
           </td>
           <td>${c.visitingDate || '-'}</td>
-          <td>${c.flatInquired || '-'}</td>
+          <td>${flatBadgesHtml}</td>
           <td><button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -714,9 +840,10 @@
         return;
       }
 
-      let csv = 'First Name,Last Name,Gaam,Taluka,District,Business,Mo No,Visiting Date,Type,Flat Inquired,Status\n';
+      let csv = 'First Name,Last Name,Business,Gaam,Taluka,District,Mo No,Visiting Date,Type,Flats Inquired,Status\n';
       clientRecords.forEach(c => {
-        csv += `"${c.firstName}","${c.lastName}","${c.gaam}","${c.taluka}","${c.district}","${c.business}","${c.moNo}","${c.visitingDate}","${c.partyType}","${c.flatInquired}","${c.status}"\n`;
+        const flatsStr = (c.flatsInquired || []).join('; ');
+        csv += `"${c.firstName}","${c.lastName}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${c.partyType}","${flatsStr}","${c.status}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -741,6 +868,8 @@
 
     window.onload = function() {
       onBuildingChange();
+      populatePrefFlatDropdown();
+      setDefaultVisitingDate();
       renderClientTable();
     };
   </script>
