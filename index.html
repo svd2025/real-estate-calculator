@@ -105,6 +105,8 @@
 
     .form-group {
       margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
     }
 
     label {
@@ -113,16 +115,32 @@
       font-weight: 600;
       margin-bottom: 4px;
       color: #5f6368;
+      line-height: 1.25;
+      min-height: 2.5em; /* Standardizes multi-line and single-line label height alignment */
+      display: flex;
+      align-items: flex-end;
     }
 
     input, select {
       width: 100%;
-      padding: 10px;
+      height: 42px; /* Consistent height standard across browser engines */
+      padding: 8px 10px;
       font-size: 0.95rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       outline: none;
       background-color: #fff;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235f6368%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px auto;
+      padding-right: 28px;
     }
 
     input:focus, select:focus {
@@ -138,6 +156,7 @@
     .row-2 {
       display: flex;
       gap: 12px;
+      align-items: flex-end;
     }
 
     .row-2 .form-group {
@@ -147,10 +166,27 @@
     .row-3 {
       display: flex;
       gap: 8px;
+      align-items: flex-end;
     }
 
     .row-3 .form-group {
       flex: 1;
+    }
+
+    /* Responsive Mobile Controls */
+    @media (max-width: 600px) {
+      .row-3 {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .row-2 {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      label {
+        min-height: auto;
+        margin-bottom: 4px;
+      }
     }
 
     .summary-box {
@@ -287,6 +323,7 @@
       padding: 4px 6px;
       font-size: 0.85rem;
       border-radius: 4px;
+      height: auto;
     }
 
     .action-cell {
@@ -308,11 +345,24 @@
     .flat-selector-box {
       display: flex;
       gap: 8px;
-      align-items: center;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 480px) {
+      .flat-selector-box {
+        flex-wrap: wrap;
+      }
+      .flat-selector-box select {
+        flex: 1 1 40% !important;
+      }
+      .btn-add-flat {
+        width: 100%;
+      }
     }
 
     .btn-add-flat {
-      padding: 10px 14px;
+      height: 42px;
+      padding: 0 14px;
       background: var(--primary-color);
       color: white;
       border: none;
@@ -504,7 +554,7 @@
         </div>
 
         <div class="form-group">
-          <label>Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
+          <label style="min-height: auto; margin-bottom: 6px;">Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
           <div class="flat-selector-box">
             <select id="prefWingSelect" style="flex: 1;" onchange="populatePrefFlatDropdown()">
               <option value="A1">A1</option>
@@ -532,7 +582,7 @@
         </div>
 
         <div class="form-group">
-          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Type, Status, Date)</label>
+          <label for="searchQuery" style="min-height: auto; margin-bottom: 4px;">Search Lead (by Name, Mobile, Gaam, Type, Status, Date)</label>
           <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, type, date..." />
         </div>
 
@@ -834,9 +884,7 @@
       }
 
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
-      
-      // Target Bitly Link
-      const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
+      const brochurePdfUrl = "https://bit.ly/4heGKww"; 
 
       const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
 
