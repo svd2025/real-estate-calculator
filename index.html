@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Real Estate Unit Calculator</title>
+  <title>Real Estate Unit Calculator & Lead Manager</title>
   <style>
     :root {
       --primary-color: #1a73e8;
@@ -26,7 +26,7 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      padding-bottom: 20px;
+      padding-bottom: 30px;
     }
 
     header {
@@ -43,7 +43,7 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
       padding: 12px;
     }
@@ -64,21 +64,21 @@
     }
 
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     label {
       display: block;
       font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #5f6368;
     }
 
     input, select {
       width: 100%;
-      padding: 12px;
-      font-size: 1rem;
+      padding: 10px;
+      font-size: 0.95rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       outline: none;
@@ -136,21 +136,37 @@
       margin-bottom: 0;
     }
 
-    .clear-btn {
+    .btn {
       width: 100%;
-      padding: 14px;
-      background-color: var(--btn-danger);
-      color: white;
+      padding: 12px;
       font-size: 1rem;
       font-weight: 700;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       transition: background-color 0.2s ease;
     }
 
-    .clear-btn:hover {
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1557b0;
+    }
+
+    .btn-success {
+      background-color: var(--accent-green);
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: var(--btn-danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
       background-color: var(--btn-danger-hover);
     }
 
@@ -179,6 +195,44 @@
 
     .tab-content.active {
       display: block;
+    }
+
+    /* Lead Table Styles */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #e8f0fe;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    .delete-btn {
+      background: var(--btn-danger);
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -268,34 +322,119 @@
         </div>
       </div>
 
-      <button class="clear-btn" onclick="resetToDefault()">CLEAR</button>
+      <button class="btn btn-danger" onclick="resetToDefault()">CLEAR</button>
     </div>
 
     <!-- TAB 2: CLIENT DETAILS -->
     <div id="lead-info" class="tab-content">
+      <!-- CARD 1: ADD NEW CLIENT -->
       <div class="card">
-        <h2>Client Record</h2>
-        <div class="form-group">
-          <label for="clientName">Client Name</label>
-          <input type="text" id="clientName" placeholder="e.g. Babubhai Gadhiya" />
+        <h2>Add / Update Client Record</h2>
+        
+        <div class="row-2">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="e.g. Babubhai" />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="e.g. Gadhiya" />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="clientPhone">Mobile Number</label>
-          <input type="tel" id="clientPhone" placeholder="e.g. 9825195811" />
+
+        <div class="row-3">
+          <div class="form-group">
+            <label for="gaam">Gaam</label>
+            <input type="text" id="gaam" placeholder="e.g. Ugamedi" />
+          </div>
+          <div class="form-group">
+            <label for="taluka">Taluka</label>
+            <input type="text" id="taluka" placeholder="e.g. Gadhada" />
+          </div>
+          <div class="form-group">
+            <label for="district">District</label>
+            <input type="text" id="district" placeholder="e.g. Bhavnagar" />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="visitStatus">Status</label>
-          <select id="visitStatus">
-            <option value="Follow-up Required">Follow-up Required</option>
-            <option value="Visit Scheduled">Visit Scheduled</option>
-            <option value="Not Interested">Not Interested</option>
-            <option value="Booked Elsewhere">Booked Elsewhere</option>
-          </select>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="business">Business</label>
+            <input type="text" id="business" placeholder="e.g. Textile / Diamond" />
+          </div>
+          <div class="form-group">
+            <label for="moNo">Mo No (Mobile)</label>
+            <input type="tel" id="moNo" placeholder="e.g. 9825195811" />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="notes">Meeting Notes</label>
-          <input type="text" id="notes" placeholder="e.g. Interested in balcony unit" />
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="visitingDate">Visiting Date</label>
+            <input type="date" id="visitingDate" />
+          </div>
+          <div class="form-group">
+            <label for="partyType">Type (Party / Broker)</label>
+            <select id="partyType">
+              <option value="Party">Party</option>
+              <option value="Broker">Broker</option>
+              <option value="Reference">Reference</option>
+            </select>
+          </div>
         </div>
+
+        <div class="form-group">
+          <label for="flatInquired">Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
+          <input type="text" id="flatInquired" placeholder="e.g. A1 - 1301" />
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="statusSelect">Status</label>
+            <select id="statusSelect">
+              <option value="Call Busy">Call Busy</option>
+              <option value="Call Cut">Call Cut</option>
+              <option value="Follow-up Required">Follow-up Required</option>
+              <option value="Visit Scheduled">Visit Scheduled</option>
+              <option value="Rubru Aavshe">Rubru Aavshe</option>
+              <option value="Not Interested">Not Interested</option>
+              <option value="Ganatri Nathi">Ganatri Nathi</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="submitClientRecord()" style="margin-top: 10px;">SUBMIT & SAVE RECORD</button>
+      </div>
+
+      <!-- CARD 2: SEARCH & CLIENT DATABASE -->
+      <div class="card">
+        <h2>Client Database & Search</h2>
+        <div class="form-group">
+          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Status)</label>
+          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search..." />
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Mo No</th>
+                <th>Gaam</th>
+                <th>Status</th>
+                <th>Visiting Date</th>
+                <th>Flat Preference</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="clientTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-success" onclick="exportToCSV()" style="margin-top: 14px;">EXPORT TO CSV / EXCEL</button>
       </div>
     </div>
   </div>
@@ -388,6 +527,8 @@
       }
     };
 
+    let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
+
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
       if (bldg === 'D1') {
@@ -453,11 +594,102 @@
     function resetToDefault() {
       document.getElementById('buildingSelect').value = 'A1';
       document.getElementById('ratePerSqFt').value = 0;
-      document.getElementById('clientName').value = '';
-      document.getElementById('clientPhone').value = '';
-      document.getElementById('visitStatus').value = 'Follow-up Required';
-      document.getElementById('notes').value = '';
       onBuildingChange();
+    }
+
+    /* CLIENT MANAGER LOGIC */
+    function submitClientRecord() {
+      const record = {
+        id: Date.now(),
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        gaam: document.getElementById('gaam').value.trim(),
+        taluka: document.getElementById('taluka').value.trim(),
+        district: document.getElementById('district').value.trim(),
+        business: document.getElementById('business').value.trim(),
+        moNo: document.getElementById('moNo').value.trim(),
+        visitingDate: document.getElementById('visitingDate').value,
+        partyType: document.getElementById('partyType').value,
+        flatInquired: document.getElementById('flatInquired').value.trim(),
+        status: document.getElementById('statusSelect').value
+      };
+
+      if (!record.firstName && !record.moNo) {
+        alert('Please enter at least a First Name or Mobile Number.');
+        return;
+      }
+
+      clientRecords.unshift(record);
+      localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+      
+      // Clear inputs
+      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'business', 'moNo', 'visitingDate', 'flatInquired'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+
+      renderClientTable();
+      alert('Client record saved successfully!');
+    }
+
+    function renderClientTable() {
+      const query = document.getElementById('searchQuery').value.toLowerCase();
+      const tbody = document.getElementById('clientTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = clientRecords.filter(c => 
+        (c.firstName && c.firstName.toLowerCase().includes(query)) ||
+        (c.lastName && c.lastName.toLowerCase().includes(query)) ||
+        (c.moNo && c.moNo.includes(query)) ||
+        (c.gaam && c.gaam.toLowerCase().includes(query)) ||
+        (c.status && c.status.toLowerCase().includes(query))
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No client records found</td></tr>';
+        return;
+      }
+
+      filtered.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.firstName || '-'}</td>
+          <td>${c.lastName || '-'}</td>
+          <td>${c.moNo || '-'}</td>
+          <td>${c.gaam || '-'}</td>
+          <td>${c.status || '-'}</td>
+          <td>${c.visitingDate || '-'}</td>
+          <td>${c.flatInquired || '-'}</td>
+          <td><button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteClient(id) {
+      if (confirm('Are you sure you want to delete this record?')) {
+        clientRecords = clientRecords.filter(c => c.id !== id);
+        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        renderClientTable();
+      }
+    }
+
+    function exportToCSV() {
+      if (clientRecords.length === 0) {
+        alert('No records to export.');
+        return;
+      }
+
+      let csv = 'First Name,Last Name,Gaam,Taluka,District,Business,Mo No,Visiting Date,Type,Flat Inquired,Status\n';
+      clientRecords.forEach(c => {
+        csv += `"${c.firstName}","${c.lastName}","${c.gaam}","${c.taluka}","${c.district}","${c.business}","${c.moNo}","${c.visitingDate}","${c.partyType}","${c.flatInquired}","${c.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'Client_Leads.csv');
+      a.click();
     }
 
     ['baseArea', 'balconyArea', 'ratePerSqFt'].forEach(id => {
@@ -474,6 +706,7 @@
 
     window.onload = function() {
       onBuildingChange();
+      renderClientTable();
     };
   </script>
 </body>
