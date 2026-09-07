@@ -340,17 +340,9 @@
       gap: 4px;
     }
 
-    .badge-penthouse {
-      background-color: #ff9800;
-    }
-
-    .badge-balcony {
-      background-color: #1a73e8;
-    }
-
-    .badge-normal {
-      background-color: #5f6368;
-    }
+    .badge-penthouse { background-color: #ff9800; }
+    .badge-balcony { background-color: #1a73e8; }
+    .badge-normal { background-color: #5f6368; }
 
     .flat-badge .remove-flat {
       cursor: pointer;
@@ -827,7 +819,6 @@
       alert('Client record saved successfully!');
     }
 
-    /* UPDATED SHORT TINYURL LINK */
     function sendWhatsAppMessage(id) {
       const client = clientRecords.find(c => c.id === id);
       if (!client) return;
@@ -844,8 +835,8 @@
 
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       
-      // Updated custom short link
-      const brochurePdfUrl = "https://tinyurl.com/DIVINERIVERA"; 
+      // Target Bitly Link
+      const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
       const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
 
