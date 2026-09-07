@@ -465,19 +465,6 @@
           <div id="selectedFlatsList" class="selected-flats-container"></div>
         </div>
 
-        <div class="form-group">
-          <label for="statusSelect">Initial Status</label>
-          <select id="statusSelect">
-            <option value="Call Busy">Call Busy</option>
-            <option value="Call Cut">Call Cut</option>
-            <option value="Follow-up Required">Follow-up Required</option>
-            <option value="Visit Scheduled">Visit Scheduled</option>
-            <option value="Rubru Aavshe">Rubru Aavshe</option>
-            <option value="Not Interested">Not Interested</option>
-            <option value="Ganatri Nathi">Ganatri Nathi</option>
-          </select>
-        </div>
-
         <button class="btn btn-primary" onclick="submitClientRecord()" style="margin-top: 10px;">SUBMIT & SAVE RECORD</button>
       </div>
 
@@ -691,7 +678,6 @@
     }
 
     function getFlatBadgeType(flatStr) {
-      // flatStr format: "A1 - 2001"
       const parts = flatStr.split(' - ');
       if (parts.length === 2) {
         const wing = parts[0].trim();
@@ -732,7 +718,7 @@
         visitingDate: document.getElementById('visitingDate').value,
         partyType: document.getElementById('partyType').value,
         flatsInquired: [...currentSelectedFlats],
-        status: document.getElementById('statusSelect').value
+        status: "Call Busy" // Default initial status
       };
 
       if (!record.firstName && !record.moNo) {
@@ -788,7 +774,6 @@
           statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
         });
 
-        // Formatted Flat Badges for Table
         let flatBadgesHtml = '';
         if (c.flatsInquired && c.flatsInquired.length > 0) {
           c.flatsInquired.forEach(fStr => {
