@@ -632,7 +632,7 @@
     };
 
     const statusOptions = [
-      "Call Busy", "Call Cut", "Follow-up Required",
+      "Brochure Sent in Whatsapp", "Call Busy", "Call Cut", "Follow-up Required",
       "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
     ];
 
@@ -813,7 +813,7 @@
         visitingDate: document.getElementById('visitingDate').value,
         partyType: finalPartyType,
         flatsInquired: [...currentSelectedFlats],
-        status: "Call Busy"
+        status: "Brochure Sent in Whatsapp"
       };
 
       if (!record.firstName && !record.moNo) {
@@ -859,7 +859,7 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       
       // REPLACE THIS URL WITH YOUR ACTUAL PDF BROCHURE LINK (e.g. Google Drive Link or GitHub Link)
-      const brochurePdfUrl = "https://drive.google.com/file/d/1_-Ggg5argoXt5Va3HokjjrnLYBUcfeJd/view?usp=drive_link"; 
+      const brochurePdfUrl = "https://your-brochure-link-here.pdf"; 
 
       const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
 
