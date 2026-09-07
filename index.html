@@ -840,7 +840,7 @@
       alert('Client record saved successfully!');
     }
 
-    /* WHATSAPP INTEGRATION WITH DOWNLOAD LINK */
+    /* WHATSAPP INTEGRATION WITH YOUR GOOGLE DRIVE BROCHURE LINK */
     function sendWhatsAppMessage(id) {
       const client = clientRecords.find(c => c.id === id);
       if (!client) return;
@@ -858,8 +858,8 @@
 
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       
-      // REPLACE THIS URL WITH YOUR ACTUAL PDF BROCHURE LINK (e.g. Google Drive Link or GitHub Link)
-      const brochurePdfUrl = "https://your-brochure-link-here.pdf"; 
+      // DIRECT DOWNLOAD GOOGLE DRIVE PDF LINK
+      const brochurePdfUrl = "https://drive.google.com/uc?export=download&id=1_-Ggg5argoXt5Va3HokjjrnLYBUcfeJd"; 
 
       const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
 
