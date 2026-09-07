@@ -43,7 +43,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 12px;
     }
@@ -226,6 +226,12 @@
       background-color: #f8f9fa;
     }
 
+    .table-select {
+      padding: 4px 6px;
+      font-size: 0.85rem;
+      border-radius: 4px;
+    }
+
     .delete-btn {
       background: var(--btn-danger);
       color: white;
@@ -329,7 +335,7 @@
     <div id="lead-info" class="tab-content">
       <!-- CARD 1: ADD NEW CLIENT -->
       <div class="card">
-        <h2>Add / Update Client Record</h2>
+        <h2>Add New Customer Record</h2>
         
         <div class="row-2">
           <div class="form-group">
@@ -388,30 +394,28 @@
           <input type="text" id="flatInquired" placeholder="e.g. A1 - 1301" />
         </div>
 
-        <div class="row-2">
-          <div class="form-group">
-            <label for="statusSelect">Status</label>
-            <select id="statusSelect">
-              <option value="Call Busy">Call Busy</option>
-              <option value="Call Cut">Call Cut</option>
-              <option value="Follow-up Required">Follow-up Required</option>
-              <option value="Visit Scheduled">Visit Scheduled</option>
-              <option value="Rubru Aavshe">Rubru Aavshe</option>
-              <option value="Not Interested">Not Interested</option>
-              <option value="Ganatri Nathi">Ganatri Nathi</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="statusSelect">Initial Status</label>
+          <select id="statusSelect">
+            <option value="Call Busy">Call Busy</option>
+            <option value="Call Cut">Call Cut</option>
+            <option value="Follow-up Required">Follow-up Required</option>
+            <option value="Visit Scheduled">Visit Scheduled</option>
+            <option value="Rubru Aavshe">Rubru Aavshe</option>
+            <option value="Not Interested">Not Interested</option>
+            <option value="Ganatri Nathi">Ganatri Nathi</option>
+          </select>
         </div>
 
         <button class="btn btn-primary" onclick="submitClientRecord()" style="margin-top: 10px;">SUBMIT & SAVE RECORD</button>
       </div>
 
-      <!-- CARD 2: SEARCH & CLIENT DATABASE -->
+      <!-- CARD 2: PAST CUSTOMER DATABASE & SEARCH -->
       <div class="card">
-        <h2>Client Database & Search</h2>
+        <h2>Past Customer Database & Live Call Log</h2>
         <div class="form-group">
-          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Status)</label>
-          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search..." />
+          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Status, Date)</label>
+          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, or date..." />
         </div>
 
         <div class="table-wrapper">
@@ -422,7 +426,7 @@
                 <th>Last Name</th>
                 <th>Mo No</th>
                 <th>Gaam</th>
-                <th>Status</th>
+                <th>Live Status Update</th>
                 <th>Visiting Date</th>
                 <th>Flat Preference</th>
                 <th>Action</th>
@@ -526,6 +530,16 @@
         "2001":{base:4716,balcony:0},"2002":{base:4716,balcony:0}
       }
     };
+
+    const statusOptions = [
+      "Call Busy",
+      "Call Cut",
+      "Follow-up Required",
+      "Visit Scheduled",
+      "Rubru Aavshe",
+      "Not Interested",
+      "Ganatri Nathi"
+    ];
 
     let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
 
@@ -641,7 +655,8 @@
         (c.lastName && c.lastName.toLowerCase().includes(query)) ||
         (c.moNo && c.moNo.includes(query)) ||
         (c.gaam && c.gaam.toLowerCase().includes(query)) ||
-        (c.status && c.status.toLowerCase().includes(query))
+        (c.status && c.status.toLowerCase().includes(query)) ||
+        (c.visitingDate && c.visitingDate.toLowerCase().includes(query))
       );
 
       if (filtered.length === 0) {
@@ -651,18 +666,38 @@
 
       filtered.forEach(c => {
         const tr = document.createElement('tr');
+        
+        // Build status dropdown options
+        let statusOptionsHtml = '';
+        statusOptions.forEach(opt => {
+          const selected = (c.status === opt) ? 'selected' : '';
+          statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
+        });
+
         tr.innerHTML = `
           <td>${c.firstName || '-'}</td>
           <td>${c.lastName || '-'}</td>
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
-          <td>${c.status || '-'}</td>
+          <td>
+            <select class="table-select" onchange="updateClientStatus(${c.id}, this.value)">
+              ${statusOptionsHtml}
+            </select>
+          </td>
           <td>${c.visitingDate || '-'}</td>
           <td>${c.flatInquired || '-'}</td>
           <td><button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button></td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function updateClientStatus(id, newStatus) {
+      const target = clientRecords.find(c => c.id === id);
+      if (target) {
+        target.status = newStatus;
+        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+      }
     }
 
     function deleteClient(id) {
