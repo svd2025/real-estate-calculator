@@ -12,6 +12,8 @@
       --text-color: #202124;
       --border-color: #dadce0;
       --accent-green: #34a853;
+      --whatsapp-green: #25d366;
+      --whatsapp-hover: #1ebc57;
       --btn-danger: #d93025;
       --btn-danger-hover: #b3261e;
     }
@@ -43,7 +45,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
       padding: 12px;
     }
@@ -209,6 +211,24 @@
       background-color: var(--btn-danger-hover);
     }
 
+    .btn-whatsapp {
+      background-color: var(--whatsapp-green);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: var(--whatsapp-hover);
+    }
+
     .tabs {
       display: flex;
       margin-bottom: 12px;
@@ -271,13 +291,20 @@
       border-radius: 4px;
     }
 
+    .action-cell {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
     .delete-btn {
       background: var(--btn-danger);
       color: white;
       border: none;
-      padding: 4px 8px;
+      padding: 5px 8px;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 0.8rem;
     }
 
     /* Multi Flat Selection Badges */
@@ -813,6 +840,34 @@
       alert('Client record saved successfully!');
     }
 
+    /* WHATSAPP INTEGRATION WITH DOWNLOAD LINK */
+    function sendWhatsAppMessage(id) {
+      const client = clientRecords.find(c => c.id === id);
+      if (!client) return;
+
+      let cleanMobile = (client.moNo || '').replace(/\D/g, '');
+      if (!cleanMobile) {
+        alert('Mobile number is missing for this client.');
+        return;
+      }
+
+      // Add Indian country code 91 if 10-digit number
+      if (cleanMobile.length === 10) {
+        cleanMobile = '91' + cleanMobile;
+      }
+
+      const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
+      
+      // REPLACE THIS URL WITH YOUR ACTUAL PDF BROCHURE LINK (e.g. Google Drive Link or GitHub Link)
+      const brochurePdfUrl = "https://your-brochure-link-here.pdf"; 
+
+      const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
+
+      const encodedMsg = encodeURIComponent(gujaratiMsg);
+      const waUrl = `https://wa.me/${cleanMobile}?text=${encodedMsg}`;
+      window.open(waUrl, '_blank');
+    }
+
     function renderClientTable() {
       const query = document.getElementById('searchQuery').value.toLowerCase();
       const tbody = document.getElementById('clientTableBody');
@@ -869,7 +924,15 @@
           </td>
           <td>${c.visitingDate || '-'}</td>
           <td>${flatBadgesHtml}</td>
-          <td><button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button></td>
+          <td>
+            <div class="action-cell">
+              <button class="btn-whatsapp" onclick="sendWhatsAppMessage(${c.id})" title="Send Gujarati WhatsApp Message">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                WhatsApp
+              </button>
+              <button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
