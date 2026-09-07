@@ -440,12 +440,13 @@
             <input type="date" id="visitingDate" />
           </div>
           <div class="form-group">
-            <label for="partyType">Type (Party / Broker)</label>
-            <select id="partyType">
+            <label for="partyType">Type (Party / Broker / Reference)</label>
+            <select id="partyType" onchange="toggleReferenceDetails()">
               <option value="Party">Party</option>
               <option value="Broker">Broker</option>
               <option value="Reference">Reference</option>
             </select>
+            <input type="text" id="referenceDetails" placeholder="Enter Reference Name / Details" style="display: none; margin-top: 6px;" />
           </div>
         </div>
 
@@ -472,8 +473,8 @@
       <div class="card">
         <h2>Past Customer Database & Live Call Log</h2>
         <div class="form-group">
-          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Status, Date)</label>
-          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, or date..." />
+          <label for="searchQuery">Search Lead (by Name, Mobile, Gaam, Type, Status, Date)</label>
+          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, type, date..." />
         </div>
 
         <div class="table-wrapper">
@@ -482,6 +483,7 @@
               <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Type</th>
                 <th>Business</th>
                 <th>Mo No</th>
                 <th>Gaam</th>
@@ -636,6 +638,17 @@
       }
     }
 
+    function toggleReferenceDetails() {
+      const select = document.getElementById('partyType');
+      const refInput = document.getElementById('referenceDetails');
+      if (select.value === 'Reference') {
+        refInput.style.display = 'block';
+      } else {
+        refInput.style.display = 'none';
+        refInput.value = '';
+      }
+    }
+
     function populatePrefFlatDropdown() {
       const bldg = document.getElementById('prefWingSelect').value;
       const prefFlatSelect = document.getElementById('prefFlatSelect');
@@ -706,6 +719,13 @@
         finalBusiness = customVal !== '' ? customVal : 'Other';
       }
 
+      const pTypeSelect = document.getElementById('partyType').value;
+      let finalPartyType = pTypeSelect;
+      if (pTypeSelect === 'Reference') {
+        const refDetails = document.getElementById('referenceDetails').value.trim();
+        finalPartyType = refDetails ? `Reference - (${refDetails})` : 'Reference';
+      }
+
       const record = {
         id: Date.now(),
         firstName: document.getElementById('firstName').value.trim(),
@@ -716,9 +736,9 @@
         business: finalBusiness,
         moNo: document.getElementById('moNo').value.trim(),
         visitingDate: document.getElementById('visitingDate').value,
-        partyType: document.getElementById('partyType').value,
+        partyType: finalPartyType,
         flatsInquired: [...currentSelectedFlats],
-        status: "Call Busy" // Default initial status
+        status: "Call Busy"
       };
 
       if (!record.firstName && !record.moNo) {
@@ -730,11 +750,13 @@
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
       
       // Clear inputs
-      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'moNo'].forEach(id => {
+      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'moNo'].forEach(id => {
         document.getElementById(id).value = '';
       });
       document.getElementById('businessSelect').value = 'Diamond';
+      document.getElementById('partyType').value = 'Party';
       toggleCustomBusiness();
+      toggleReferenceDetails();
       currentSelectedFlats = [];
       renderSelectedFlatBadges();
       setDefaultVisitingDate();
@@ -755,13 +777,14 @@
                (c.business && c.business.toLowerCase().includes(query)) ||
                (c.moNo && c.moNo.includes(query)) ||
                (c.gaam && c.gaam.toLowerCase().includes(query)) ||
+               (c.partyType && c.partyType.toLowerCase().includes(query)) ||
                (c.status && c.status.toLowerCase().includes(query)) ||
                (c.visitingDate && c.visitingDate.toLowerCase().includes(query)) ||
                (flatText.toLowerCase().includes(query));
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No client records found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No client records found</td></tr>';
         return;
       }
 
@@ -787,6 +810,7 @@
         tr.innerHTML = `
           <td>${c.firstName || '-'}</td>
           <td>${c.lastName || '-'}</td>
+          <td>${c.partyType || '-'}</td>
           <td>${c.business || '-'}</td>
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
@@ -825,10 +849,10 @@
         return;
       }
 
-      let csv = 'First Name,Last Name,Business,Gaam,Taluka,District,Mo No,Visiting Date,Type,Flats Inquired,Status\n';
+      let csv = 'First Name,Last Name,Type,Business,Gaam,Taluka,District,Mo No,Visiting Date,Flats Inquired,Status\n';
       clientRecords.forEach(c => {
         const flatsStr = (c.flatsInquired || []).join('; ');
-        csv += `"${c.firstName}","${c.lastName}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${c.partyType}","${flatsStr}","${c.status}"\n`;
+        csv += `"${c.firstName}","${c.lastName}","${c.partyType}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${flatsStr}","${c.status}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
