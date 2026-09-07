@@ -73,7 +73,6 @@
       color: var(--primary-color);
     }
 
-    /* LEGEND BADGES AT TOP-RIGHT */
     .color-legend {
       display: flex;
       gap: 8px;
@@ -256,7 +255,6 @@
       display: block;
     }
 
-    /* Lead Table Styles */
     .table-wrapper {
       overflow-x: auto;
       margin-top: 10px;
@@ -307,7 +305,6 @@
       font-size: 0.8rem;
     }
 
-    /* Multi Flat Selection Badges */
     .flat-selector-box {
       display: flex;
       gap: 8px;
@@ -332,7 +329,6 @@
       margin-top: 8px;
     }
 
-    /* Color Badges */
     .flat-badge {
       display: inline-flex;
       align-items: center;
@@ -345,15 +341,15 @@
     }
 
     .badge-penthouse {
-      background-color: #ff9800; /* Orange for Penthouse */
+      background-color: #ff9800;
     }
 
     .badge-balcony {
-      background-color: #1a73e8; /* Blue for Extra Balcony */
+      background-color: #1a73e8;
     }
 
     .badge-normal {
-      background-color: #5f6368; /* Grey for Normal */
+      background-color: #5f6368;
     }
 
     .flat-badge .remove-flat {
@@ -454,7 +450,6 @@
 
     <!-- TAB 2: CLIENT DETAILS -->
     <div id="lead-info" class="tab-content">
-      <!-- CARD 1: ADD NEW CLIENT -->
       <div class="card">
         <h2>Add New Customer Record</h2>
         
@@ -516,7 +511,6 @@
           </div>
         </div>
 
-        <!-- MULTI FLAT PREFERENCE SELECTOR -->
         <div class="form-group">
           <label>Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
           <div class="flat-selector-box">
@@ -535,11 +529,9 @@
         <button class="btn btn-primary" onclick="submitClientRecord()" style="margin-top: 10px;">SUBMIT & SAVE RECORD</button>
       </div>
 
-      <!-- CARD 2: PAST CUSTOMER DATABASE & SEARCH -->
       <div class="card">
         <div class="card-header-flex">
           <h2>Past Customer Database & Live Call Log</h2>
-          <!-- COLOR LEGEND TOP RIGHT -->
           <div class="color-legend">
             <span class="legend-item"><span class="legend-box grey"></span> Grey - Normal Flat</span>
             <span class="legend-item"><span class="legend-box blue"></span> Blue - Flat with Extra Balcony</span>
@@ -568,9 +560,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="clientTableBody">
-              <!-- Dynamically populated -->
-            </tbody>
+            <tbody id="clientTableBody"></tbody>
           </table>
         </div>
 
@@ -639,7 +629,6 @@
     let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
     let currentSelectedFlats = [];
 
-    /* CALCULATOR FUNCTIONS */
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
       document.getElementById('floorRise').value = (bldg === 'D1') ? "100" : "50";
@@ -701,7 +690,6 @@
       onBuildingChange();
     }
 
-    /* CLIENT FORM LOGIC */
     function toggleCustomBusiness() {
       const select = document.getElementById('businessSelect');
       const customInput = document.getElementById('customBusiness');
@@ -824,7 +812,6 @@
       clientRecords.unshift(record);
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
       
-      // Clear inputs
       ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'moNo'].forEach(id => {
         document.getElementById(id).value = '';
       });
@@ -840,7 +827,7 @@
       alert('Client record saved successfully!');
     }
 
-    /* WHATSAPP INTEGRATION WITH YOUR GOOGLE DRIVE BROCHURE LINK */
+    /* UPDATED SHORT TINYURL LINK */
     function sendWhatsAppMessage(id) {
       const client = clientRecords.find(c => c.id === id);
       if (!client) return;
@@ -851,15 +838,14 @@
         return;
       }
 
-      // Add Indian country code 91 if 10-digit number
       if (cleanMobile.length === 10) {
         cleanMobile = '91' + cleanMobile;
       }
 
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       
-      // DIRECT DOWNLOAD GOOGLE DRIVE PDF LINK
-      const brochurePdfUrl = "https://drive.google.com/uc?export=download&id=1_-Ggg5argoXt5Va3HokjjrnLYBUcfeJd"; 
+      // Updated custom short link
+      const brochurePdfUrl = "https://tinyurl.com/DIVINERIVERA"; 
 
       const gujaratiMsg = `નમસ્તે ${clientName}, અમારા પ્રોજેક્ટ ડિવાઈન રિવેરા માં રસ દર્શાવવા બદલ આભાર!\n\nપ્રોજેક્ટની બ્રોશર પીડીએફ (PDF) નીચેની લિન્ક કલીક કરતાં ડાઉનલોડ થશે:\n${brochurePdfUrl}\n\nઅન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\nઆપનો દિવસ શુભ રહે!`;
 
