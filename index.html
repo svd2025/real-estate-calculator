@@ -931,10 +931,10 @@ function sendWhatsAppMessage(id) {
   const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
   const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-  // Using Unicode escapes for emojis ensures 100% reliable encoding across all browsers and devices
-  const handPointDown = "\u{1F447}"; // 👇
-  const checkMark     = "\u{2705}";  // ✅
-  const foldedHands   = "\u{1F64F}"; // 🙏
+  // String.fromCodePoint guarantees 100% unicode safety across all JS engines & browsers
+  const handPointDown = String.fromCodePoint(0x1F447); // 👇
+  const checkMark     = String.fromCodePoint(0x2705);  // ✅
+  const foldedHands   = String.fromCodePoint(0x1F64F); // 🙏
 
   const gujaratiMsg = `નમસ્તે ${clientName},\n\n` +
                       `અમારા પ્રોજેક્ટ *ડિવાઈન રિવેરા* માં રસ દર્શાવવા બદલ આભાર!\n\n` +
