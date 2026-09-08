@@ -116,14 +116,14 @@
       margin-bottom: 4px;
       color: #5f6368;
       line-height: 1.25;
-      min-height: 2.5em; /* Standardizes multi-line and single-line label height alignment */
+      min-height: 2.5em;
       display: flex;
       align-items: flex-end;
     }
 
     input, select {
       width: 100%;
-      height: 42px; /* Consistent height standard across browser engines */
+      height: 42px;
       padding: 8px 10px;
       font-size: 0.95rem;
       border: 1px solid var(--border-color);
@@ -173,13 +173,19 @@
       flex: 1;
     }
 
-    /* Responsive Mobile Controls */
+    .dynamic-fields-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .dynamic-fields-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
     @media (max-width: 600px) {
-      .row-3 {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .row-2 {
+      .row-3, .row-2, .dynamic-fields-row {
         flex-direction: column;
         align-items: stretch;
       }
@@ -544,12 +550,25 @@
           </div>
           <div class="form-group">
             <label for="partyType">Type (Party / Broker / Reference)</label>
-            <select id="partyType" onchange="toggleReferenceDetails()">
+            <select id="partyType" onchange="toggleTypeDetails()">
               <option value="Party">Party</option>
+              <option value="Party via Broker">Party via Broker</option>
               <option value="Broker">Broker</option>
               <option value="Reference">Reference</option>
             </select>
+            
             <input type="text" id="referenceDetails" placeholder="Enter Reference Name / Details" style="display: none; margin-top: 6px;" />
+
+            <!-- Dynamic Broker Input Row for "Party via Broker" -->
+            <div id="brokerDetailsBox" class="dynamic-fields-row" style="display: none;">
+              <div class="form-group">
+                <input type="text" id="brokerFullName" placeholder="Broker Full Name" />
+              </div>
+              <div class="form-group">
+                <input type="tel" id="brokerMobile" placeholder="Broker Mobile No." />
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -582,8 +601,8 @@
         </div>
 
         <div class="form-group">
-          <label for="searchQuery" style="min-height: auto; margin-bottom: 4px;">Search Lead (by Name, Mobile, Gaam, Type, Status, Date)</label>
-          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search by name, status, mobile, gaam, type, date..." />
+          <label for="searchQuery" style="min-height: auto; margin-bottom: 4px;">Search Lead (by Name, Mobile, Gaam, Type, Status, Date, Broker)</label>
+          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search..." />
         </div>
 
         <div class="table-wrapper">
@@ -743,14 +762,26 @@
       }
     }
 
-    function toggleReferenceDetails() {
+    function toggleTypeDetails() {
       const select = document.getElementById('partyType');
       const refInput = document.getElementById('referenceDetails');
+      const brokerBox = document.getElementById('brokerDetailsBox');
+
       if (select.value === 'Reference') {
         refInput.style.display = 'block';
-      } else {
+        brokerBox.style.display = 'none';
+        document.getElementById('brokerFullName').value = '';
+        document.getElementById('brokerMobile').value = '';
+      } else if (select.value === 'Party via Broker') {
+        brokerBox.style.display = 'flex';
         refInput.style.display = 'none';
         refInput.value = '';
+      } else {
+        refInput.style.display = 'none';
+        brokerBox.style.display = 'none';
+        refInput.value = '';
+        document.getElementById('brokerFullName').value = '';
+        document.getElementById('brokerMobile').value = '';
       }
     }
 
@@ -826,9 +857,21 @@
 
       const pTypeSelect = document.getElementById('partyType').value;
       let finalPartyType = pTypeSelect;
+      let brokerName = '';
+      let brokerMobile = '';
+
       if (pTypeSelect === 'Reference') {
         const refDetails = document.getElementById('referenceDetails').value.trim();
         finalPartyType = refDetails ? `Reference - (${refDetails})` : 'Reference';
+      } else if (pTypeSelect === 'Party via Broker') {
+        brokerName = document.getElementById('brokerFullName').value.trim();
+        brokerMobile = document.getElementById('brokerMobile').value.trim();
+        
+        let detailsStr = [];
+        if (brokerName) detailsStr.push(brokerName);
+        if (brokerMobile) detailsStr.push(brokerMobile);
+        
+        finalPartyType = detailsStr.length > 0 ? `Party via Broker (${detailsStr.join(' - ')})` : 'Party via Broker';
       }
 
       const record = {
@@ -842,6 +885,8 @@
         moNo: document.getElementById('moNo').value.trim(),
         visitingDate: document.getElementById('visitingDate').value,
         partyType: finalPartyType,
+        brokerName: brokerName,
+        brokerMobile: brokerMobile,
         flatsInquired: [...currentSelectedFlats],
         status: "Brochure Sent in Whatsapp"
       };
@@ -854,13 +899,13 @@
       clientRecords.unshift(record);
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
       
-      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'moNo'].forEach(id => {
+      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'brokerFullName', 'brokerMobile', 'moNo'].forEach(id => {
         document.getElementById(id).value = '';
       });
       document.getElementById('businessSelect').value = 'Diamond';
       document.getElementById('partyType').value = 'Party';
       toggleCustomBusiness();
-      toggleReferenceDetails();
+      toggleTypeDetails();
       currentSelectedFlats = [];
       renderSelectedFlatBadges();
       setDefaultVisitingDate();
@@ -906,6 +951,8 @@
                (c.moNo && c.moNo.includes(query)) ||
                (c.gaam && c.gaam.toLowerCase().includes(query)) ||
                (c.partyType && c.partyType.toLowerCase().includes(query)) ||
+               (c.brokerName && c.brokerName.toLowerCase().includes(query)) ||
+               (c.brokerMobile && c.brokerMobile.includes(query)) ||
                (c.status && c.status.toLowerCase().includes(query)) ||
                (c.visitingDate && c.visitingDate.toLowerCase().includes(query)) ||
                (flatText.toLowerCase().includes(query));
@@ -985,10 +1032,12 @@
         return;
       }
 
-      let csv = 'First Name,Last Name,Type,Business,Gaam,Taluka,District,Mo No,Visiting Date,Flats Inquired,Status\n';
+      let csv = 'First Name,Last Name,Type,Broker Name,Broker Mobile,Business,Gaam,Taluka,District,Mo No,Visiting Date,Flats Inquired,Status\n';
       clientRecords.forEach(c => {
         const flatsStr = (c.flatsInquired || []).join('; ');
-        csv += `"${c.firstName}","${c.lastName}","${c.partyType}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${flatsStr}","${c.status}"\n`;
+        const bName = c.brokerName || '';
+        const bMobile = c.brokerMobile || '';
+        csv += `"${c.firstName}","${c.lastName}","${c.partyType}","${bName}","${bMobile}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${flatsStr}","${c.status}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
