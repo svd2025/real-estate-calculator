@@ -16,6 +16,8 @@
       --whatsapp-hover: #1ebc57;
       --btn-danger: #d93025;
       --btn-danger-hover: #b3261e;
+      --btn-edit: #1a73e8;
+      --btn-edit-hover: #1557b0;
     }
 
     * {
@@ -270,6 +272,21 @@
       background-color: var(--whatsapp-hover);
     }
 
+    .btn-edit {
+      background-color: var(--btn-edit);
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .btn-edit:hover {
+      background-color: var(--btn-edit-hover);
+    }
+
     .tabs {
       display: flex;
       margin-bottom: 12px;
@@ -405,6 +422,12 @@
       font-weight: normal;
       margin-left: 4px;
     }
+
+    .button-group-flex {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -498,8 +521,8 @@
 
     <!-- TAB 2: CLIENT DETAILS -->
     <div id="lead-info" class="tab-content">
-      <div class="card">
-        <h2>Add New Customer Record</h2>
+      <div class="card" id="clientFormCard">
+        <h2 id="formHeader">Add New Customer Record</h2>
         
         <div class="row-2">
           <div class="form-group">
@@ -587,7 +610,10 @@
           <div id="selectedFlatsList" class="selected-flats-container"></div>
         </div>
 
-        <button class="btn btn-primary" onclick="submitClientRecord()" style="margin-top: 10px;">SUBMIT & SAVE RECORD</button>
+        <div class="button-group-flex">
+          <button class="btn btn-primary" id="submitBtn" onclick="submitClientRecord()">SUBMIT & SAVE RECORD</button>
+          <button class="btn btn-danger" id="cancelEditBtn" onclick="clearClientForm()" style="display: none; width: 30%;">CANCEL EDIT</button>
+        </div>
       </div>
 
       <div class="card">
@@ -689,6 +715,7 @@
 
     let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
     let currentSelectedFlats = [];
+    let editingClientId = null;
 
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
@@ -866,39 +893,124 @@
       } else if (pTypeSelect === 'Party via Broker') {
         brokerName = document.getElementById('brokerFullName').value.trim();
         brokerMobile = document.getElementById('brokerMobile').value.trim();
-        
         let detailsStr = [];
         if (brokerName) detailsStr.push(brokerName);
         if (brokerMobile) detailsStr.push(brokerMobile);
-        
         finalPartyType = detailsStr.length > 0 ? `Party via Broker (${detailsStr.join(' - ')})` : 'Party via Broker';
       }
 
-      const record = {
-        id: Date.now(),
-        firstName: document.getElementById('firstName').value.trim(),
-        lastName: document.getElementById('lastName').value.trim(),
-        gaam: document.getElementById('gaam').value.trim(),
-        taluka: document.getElementById('taluka').value.trim(),
-        district: document.getElementById('district').value.trim(),
-        business: finalBusiness,
-        moNo: document.getElementById('moNo').value.trim(),
-        visitingDate: document.getElementById('visitingDate').value,
-        partyType: finalPartyType,
-        brokerName: brokerName,
-        brokerMobile: brokerMobile,
-        flatsInquired: [...currentSelectedFlats],
-        status: "Brochure Sent in Whatsapp"
-      };
+      const firstName = document.getElementById('firstName').value.trim();
+      const moNo = document.getElementById('moNo').value.trim();
 
-      if (!record.firstName && !record.moNo) {
+      if (!firstName && !moNo) {
         alert('Please enter at least a First Name or Mobile Number.');
         return;
       }
 
-      clientRecords.unshift(record);
+      if (editingClientId !== null) {
+        // UPDATE EXISTING RECORD
+        const index = clientRecords.findIndex(c => c.id === editingClientId);
+        if (index !== -1) {
+          clientRecords[index] = {
+            ...clientRecords[index],
+            firstName: firstName,
+            lastName: document.getElementById('lastName').value.trim(),
+            gaam: document.getElementById('gaam').value.trim(),
+            taluka: document.getElementById('taluka').value.trim(),
+            district: document.getElementById('district').value.trim(),
+            business: finalBusiness,
+            moNo: moNo,
+            visitingDate: document.getElementById('visitingDate').value,
+            partyType: finalPartyType,
+            brokerName: brokerName,
+            brokerMobile: brokerMobile,
+            flatsInquired: [...currentSelectedFlats]
+          };
+          alert('Client record updated successfully!');
+        }
+      } else {
+        // CREATE NEW RECORD
+        const record = {
+          id: Date.now(),
+          firstName: firstName,
+          lastName: document.getElementById('lastName').value.trim(),
+          gaam: document.getElementById('gaam').value.trim(),
+          taluka: document.getElementById('taluka').value.trim(),
+          district: document.getElementById('district').value.trim(),
+          business: finalBusiness,
+          moNo: moNo,
+          visitingDate: document.getElementById('visitingDate').value,
+          partyType: finalPartyType,
+          brokerName: brokerName,
+          brokerMobile: brokerMobile,
+          flatsInquired: [...currentSelectedFlats],
+          status: "Brochure Sent in Whatsapp"
+        };
+        clientRecords.unshift(record);
+        alert('Client record saved successfully!');
+      }
+
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
-      
+      clearClientForm();
+      renderClientTable();
+    }
+
+    function editClientRecord(id) {
+      const client = clientRecords.find(c => c.id === id);
+      if (!client) return;
+
+      editingClientId = id;
+
+      document.getElementById('firstName').value = client.firstName || '';
+      document.getElementById('lastName').value = client.lastName || '';
+      document.getElementById('gaam').value = client.gaam || '';
+      document.getElementById('taluka').value = client.taluka || '';
+      document.getElementById('district').value = client.district || '';
+      document.getElementById('moNo').value = client.moNo || '';
+      document.getElementById('visitingDate').value = client.visitingDate || '';
+
+      // Business Field handling
+      if (['Diamond', 'Textile'].includes(client.business)) {
+        document.getElementById('businessSelect').value = client.business;
+        document.getElementById('customBusiness').value = '';
+      } else {
+        document.getElementById('businessSelect').value = 'Other';
+        document.getElementById('customBusiness').value = client.business || '';
+      }
+      toggleCustomBusiness();
+
+      // Type Field handling
+      const pt = client.partyType || 'Party';
+      if (pt.startsWith('Party via Broker')) {
+        document.getElementById('partyType').value = 'Party via Broker';
+        document.getElementById('brokerFullName').value = client.brokerName || '';
+        document.getElementById('brokerMobile').value = client.brokerMobile || '';
+      } else if (pt.startsWith('Reference')) {
+        document.getElementById('partyType').value = 'Reference';
+        let refName = pt.includes('(') ? pt.substring(pt.indexOf('(') + 1, pt.lastIndexOf(')')) : '';
+        document.getElementById('referenceDetails').value = refName;
+      } else if (pt === 'Broker') {
+        document.getElementById('partyType').value = 'Broker';
+      } else {
+        document.getElementById('partyType').value = 'Party';
+      }
+      toggleTypeDetails();
+
+      // Flat Preference badges
+      currentSelectedFlats = client.flatsInquired ? [...client.flatsInquired] : [];
+      renderSelectedFlatBadges();
+
+      // Update Form Headers & Buttons
+      document.getElementById('formHeader').innerText = 'Edit Customer Record';
+      document.getElementById('submitBtn').innerText = 'UPDATE CLIENT RECORD';
+      document.getElementById('cancelEditBtn').style.display = 'block';
+
+      // Scroll smoothly to form
+      document.getElementById('clientFormCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function clearClientForm() {
+      editingClientId = null;
       ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'brokerFullName', 'brokerMobile', 'moNo'].forEach(id => {
         document.getElementById(id).value = '';
       });
@@ -910,8 +1022,9 @@
       renderSelectedFlatBadges();
       setDefaultVisitingDate();
 
-      renderClientTable();
-      alert('Client record saved successfully!');
+      document.getElementById('formHeader').innerText = 'Add New Customer Record';
+      document.getElementById('submitBtn').innerText = 'SUBMIT & SAVE RECORD';
+      document.getElementById('cancelEditBtn').style.display = 'none';
     }
 
     function sendWhatsAppMessage(id) {
@@ -931,7 +1044,6 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      // Using String.fromCodePoint ensures clean unicode execution
       const handPointDown = String.fromCodePoint(0x1F447); // 👇
       const checkMark     = String.fromCodePoint(0x2705);  // ✅
       const foldedHands   = String.fromCodePoint(0x1F64F); // 🙏
@@ -1013,6 +1125,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
                 WhatsApp
               </button>
+              <button class="btn-edit" onclick="editClientRecord(${c.id})">Edit</button>
               <button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button>
             </div>
           </td>
@@ -1033,6 +1146,9 @@
       if (confirm('Are you sure you want to delete this record?')) {
         clientRecords = clientRecords.filter(c => c.id !== id);
         localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        if (editingClientId === id) {
+          clearClientForm();
+        }
         renderClientTable();
       }
     }
