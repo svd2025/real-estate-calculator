@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unit Calculator & Lead Manager</title>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
     body { margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
     header { background-color: #1a73e8; color: white; text-align: center; padding: 15px; font-size: 22px; font-weight: bold; }
     
-    .nav-tabs { display: flex; justify-content: center; background: #e0e0e0; margin-bottom: 20px; }
+    .nav-tabs { display: flex; justify-content: center; background: #e0e0e0; }
     .tab-btn { flex: 1; max-width: 300px; padding: 12px; border: none; background: #e0e0e0; font-size: 16px; font-weight: bold; cursor: pointer; color: #555; }
     .tab-btn.active { background: #1a73e8; color: white; }
 
-    .container { max-width: 1200px; margin: 0 auto 30px auto; padding: 0 15px; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
@@ -27,7 +27,7 @@
     .btn:hover { background-color: #1557b0; }
     .btn-green { background-color: #28a745; margin-top: 15px; }
     .btn-green:hover { background-color: #218838; }
-    .btn-add { background-color: #007bff; width: auto; min-width: 100px; }
+    .btn-add { background-color: #007bff; width: auto; }
     
     .table-container { overflow-x: auto; margin-top: 15px; }
     table { width: 100%; border-collapse: collapse; min-width: 900px; }
@@ -39,9 +39,14 @@
     .badge-grey { background-color: #6c757d; }
     .badge-blue { background-color: #007bff; }
     .badge-orange { background-color: #fd7e14; }
-    
-    .calc-box { background: #eef4ff; border: 1px solid #b6d4fe; border-radius: 6px; padding: 15px; margin-top: 15px; }
-    .calc-result { font-size: 18px; font-weight: bold; color: #0d6efd; margin-top: 10px; }
+
+    /* Calculator Specifics */
+    .building-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+    .unit-card { border: 1px solid #ddd; border-radius: 6px; padding: 15px; background: #fafafa; }
+    .unit-card.grey { border-left: 5px solid #6c757d; }
+    .unit-card.blue { border-left: 5px solid #007bff; }
+    .unit-card.orange { border-left: 5px solid #fd7e14; }
+    .price-output { font-size: 16px; font-weight: bold; color: #28a745; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -55,36 +60,59 @@
 
 <div class="container">
   
-  <!-- TAB 1: CALCULATOR -->
+  <!-- TAB 1: ORIGINAL BUILDING CALCULATOR -->
   <div id="calculatorTab" class="tab-content active">
     <div class="card">
-      <h3>Unit Rate & Cost Calculator</h3>
+      <h3>ડિવાઈન રિવેરા - Building & Unit Price Calculator</h3>
       <div class="grid">
         <div class="form-group">
-          <label>Carpet Area (Sq. Ft.)</label>
-          <input type="number" id="carpetArea" placeholder="e.g. 1050" oninput="calculateUnit()">
+          <label>Base Rate per Sq. Ft. (₹)</label>
+          <input type="number" id="baseRateInput" value="3200" oninput="calculateAllUnits()">
         </div>
         <div class="form-group">
-          <label>Rate per Sq. Ft. (₹)</label>
-          <input type="number" id="ratePerSqFt" placeholder="e.g. 3500" oninput="calculateUnit()">
+          <label>Extra Balcony Charge (₹)</label>
+          <input type="number" id="balconyChargeInput" value="100000" oninput="calculateAllUnits()">
         </div>
         <div class="form-group">
-          <label>Extra Charges / Parking (₹)</label>
-          <input type="number" id="extraCharges" placeholder="e.g. 150000" oninput="calculateUnit()">
+          <label>Pent House Premium (₹)</label>
+          <input type="number" id="penthouseChargeInput" value="500000" oninput="calculateAllUnits()">
         </div>
       </div>
 
-      <div class="calc-box">
-        <div><strong>Base Cost:</strong> ₹<span id="baseCost">0</span></div>
-        <div class="calc-result">Final Total Amount: ₹<span id="totalCost">0</span></div>
+      <div class="building-grid">
+        <!-- Building A1 -->
+        <div class="unit-card grey">
+          <h4>Building A1 (Standard)</h4>
+          <p>Carpet Area: <strong>1150 Sq. Ft.</strong></p>
+          <div class="price-output">Total: ₹<span id="priceA1">0</span></div>
+        </div>
+
+        <!-- Building B1 -->
+        <div class="unit-card blue">
+          <h4>Building B1 (Extra Balcony)</h4>
+          <p>Carpet Area: <strong>1250 Sq. Ft.</strong></p>
+          <div class="price-output">Total: ₹<span id="priceB1">0</span></div>
+        </div>
+
+        <!-- Building C1 -->
+        <div class="unit-card grey">
+          <h4>Building C1 (Standard)</h4>
+          <p>Carpet Area: <strong>1180 Sq. Ft.</strong></p>
+          <div class="price-output">Total: ₹<span id="priceC1">0</span></div>
+        </div>
+
+        <!-- Building D1 -->
+        <div class="unit-card orange">
+          <h4>Building D1 (Pent House)</h4>
+          <p>Carpet Area: <strong>1650 Sq. Ft.</strong></p>
+          <div class="price-output">Total: ₹<span id="priceD1">0</span></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB 2: CLIENT DETAILS & LEAD MANAGER -->
+  <!-- TAB 2: LEAD MANAGER -->
   <div id="clientDetailsTab" class="tab-content">
-    
-    <!-- Add New Record Form -->
     <div class="card">
       <h3 style="color: #1a73e8; margin-top: 0;">Add New Customer Record</h3>
       
@@ -186,7 +214,6 @@
       <button type="button" class="btn" style="margin-top: 20px;" onclick="submitClientRecord()">SUBMIT & SAVE RECORD</button>
     </div>
 
-    <!-- Past Database Table -->
     <div class="card">
       <h3 style="margin-top: 0;">Past Customer Database & Live Call Log</h3>
       
@@ -221,7 +248,6 @@
 
       <button type="button" class="btn btn-green" onclick="exportToCSV()">EXPORT TO CSV / EXCEL</button>
     </div>
-
   </div>
 </div>
 
@@ -231,7 +257,6 @@
   let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
   let currentSelectedFlats = [];
 
-  // Tab switching
   function switchTab(tabId, btnElement) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -239,20 +264,23 @@
     btnElement.classList.add('active');
   }
 
-  // Calculator Logic
-  function calculateUnit() {
-    const area = parseFloat(document.getElementById('carpetArea').value) || 0;
-    const rate = parseFloat(document.getElementById('ratePerSqFt').value) || 0;
-    const extra = parseFloat(document.getElementById('extraCharges').value) || 0;
+  // Original Building Calculator Logic
+  function calculateAllUnits() {
+    const rate = parseFloat(document.getElementById('baseRateInput').value) || 0;
+    const balcony = parseFloat(document.getElementById('balconyChargeInput').value) || 0;
+    const penthouse = parseFloat(document.getElementById('penthouseChargeInput').value) || 0;
 
-    const base = area * rate;
-    const total = base + extra;
+    const priceA1 = (1150 * rate);
+    const priceB1 = (1250 * rate) + balcony;
+    const priceC1 = (1180 * rate);
+    const priceD1 = (1650 * rate) + penthouse;
 
-    document.getElementById('baseCost').innerText = base.toLocaleString('en-IN');
-    document.getElementById('totalCost').innerText = total.toLocaleString('en-IN');
+    document.getElementById('priceA1').innerText = priceA1.toLocaleString('en-IN');
+    document.getElementById('priceB1').innerText = priceB1.toLocaleString('en-IN');
+    document.getElementById('priceC1').innerText = priceC1.toLocaleString('en-IN');
+    document.getElementById('priceD1').innerText = priceD1.toLocaleString('en-IN');
   }
 
-  // Form Field Toggles
   function toggleCustomBusiness() {
     const bus = document.getElementById('businessSelect').value;
     document.getElementById('customBusiness').style.display = bus === 'Other' ? 'block' : 'none';
@@ -274,7 +302,6 @@
     }
   }
 
-  // Record Submission
   function submitClientRecord() {
     const busSelect = document.getElementById('businessSelect').value;
     let finalBusiness = busSelect;
@@ -325,11 +352,9 @@
       status: "Brochure Sent in Whatsapp"
     };
 
-    // Save locally
     clientRecords.unshift(recordPayload);
     localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
 
-    // Post to Google Sheets
     fetch(GOOGLE_SHEET_WEB_APP_URL, {
       method: 'POST',
       mode: 'no-cors',
@@ -399,10 +424,9 @@
     a.click();
   }
 
-  // Set default date to today
+  // Init
   document.getElementById('visitingDate').valueAsDate = new Date();
-
-  // Initial Render
+  calculateAllUnits();
   renderClientTable();
 </script>
 </body>
