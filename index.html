@@ -5,159 +5,223 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unit Calculator & Lead Manager</title>
   <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
-    header { background-color: #1a73e8; color: white; text-align: center; padding: 15px; font-size: 20px; font-weight: bold; }
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+    header { background-color: #1a73e8; color: white; text-align: center; padding: 15px; font-size: 22px; font-weight: bold; }
+    
+    .nav-tabs { display: flex; justify-content: center; background: #e0e0e0; margin-bottom: 20px; }
+    .tab-btn { flex: 1; max-width: 300px; padding: 12px; border: none; background: #e0e0e0; font-size: 16px; font-weight: bold; cursor: pointer; color: #555; }
+    .tab-btn.active { background: #1a73e8; color: white; }
+
+    .container { max-width: 1200px; margin: 0 auto 30px auto; padding: 0 15px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
     .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
     .form-group { display: flex; flex-direction: column; }
     label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
     input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    
     .btn { background-color: #1a73e8; color: white; border: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
     .btn:hover { background-color: #1557b0; }
     .btn-green { background-color: #28a745; margin-top: 15px; }
     .btn-green:hover { background-color: #218838; }
-    .btn-add { background-color: #007bff; height: 40px; margin-top: auto; }
+    .btn-add { background-color: #007bff; width: auto; min-width: 100px; }
+    
     .table-container { overflow-x: auto; margin-top: 15px; }
     table { width: 100%; border-collapse: collapse; min-width: 900px; }
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
     th { background-color: #e9ecef; }
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; color: white; }
+    
+    .badge-bar { display: flex; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+    .badge { padding: 4px 8px; border-radius: 4px; color: white; font-weight: bold; }
     .badge-grey { background-color: #6c757d; }
     .badge-blue { background-color: #007bff; }
     .badge-orange { background-color: #fd7e14; }
+    
+    .calc-box { background: #eef4ff; border: 1px solid #b6d4fe; border-radius: 6px; padding: 15px; margin-top: 15px; }
+    .calc-result { font-size: 18px; font-weight: bold; color: #0d6efd; margin-top: 10px; }
   </style>
 </head>
 <body>
 
 <header>Unit Calculator & Lead Manager</header>
 
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('calculatorTab', this)">Calculator</button>
+  <button class="tab-btn" onclick="switchTab('clientDetailsTab', this)">Client Details</button>
+</div>
+
 <div class="container">
-  <!-- Input Form -->
-  <div class="card">
-    <div class="grid">
-      <div class="form-group">
-        <label>First Name</label>
-        <input type="text" id="firstName" placeholder="e.g. Dineshbhai">
-      </div>
-      <div class="form-group">
-        <label>Last Name</label>
-        <input type="text" id="lastName" placeholder="e.g. Jodhani">
-      </div>
-      <div class="form-group">
-        <label>Gaam</label>
-        <input type="text" id="gaam" placeholder="e.g. Ugamedi">
-      </div>
-      <div class="form-group">
-        <label>Taluka</label>
-        <input type="text" id="taluka" placeholder="e.g. Gadhada">
-      </div>
-      <div class="form-group">
-        <label>District</label>
-        <input type="text" id="district" placeholder="e.g. Bhavnagar">
-      </div>
-    </div>
-
-    <div class="grid" style="margin-top: 15px;">
-      <div class="form-group">
-        <label>Business</label>
-        <select id="businessSelect" onchange="toggleCustomBusiness()">
-          <option value="Diamond">Diamond</option>
-          <option value="Textile">Textile</option>
-          <option value="school">School</option>
-          <option value="Broker">Broker</option>
-          <option value="Other">Other</option>
-        </select>
-        <input type="text" id="customBusiness" placeholder="Enter Business Name" style="display:none; margin-top:5px;">
-      </div>
-      <div class="form-group">
-        <label>Mo No (Mobile)</label>
-        <input type="text" id="moNo" placeholder="e.g. 9825195811">
-      </div>
-      <div class="form-group">
-        <label>Visiting Date</label>
-        <input type="date" id="visitingDate">
-      </div>
-      <div class="form-group">
-        <label>Type (Party / Broker / Reference)</label>
-        <select id="partyType" onchange="togglePartyDetails()">
-          <option value="Party">Party</option>
-          <option value="Broker">Broker</option>
-          <option value="Reference">Reference</option>
-          <option value="Party via Broker">Party via Broker</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="referenceGroup" class="form-group" style="display:none; margin-top: 15px;">
-      <label>Reference Details</label>
-      <input type="text" id="referenceDetails" placeholder="e.g. Jayeshkaka Kakadiya">
-    </div>
-
-    <div id="brokerGroup" class="grid" style="display:none; margin-top: 15px;">
-      <div class="form-group">
-        <label>Broker Full Name</label>
-        <input type="text" id="brokerFullName" placeholder="e.g. Ganeshbhai Lathiya">
-      </div>
-      <div class="form-group">
-        <label>Broker Mobile</label>
-        <input type="text" id="brokerMobile" placeholder="e.g. 9824493727">
-      </div>
-    </div>
-
-    <div class="grid" style="margin-top: 15px;">
-      <div class="form-group" style="grid-column: span 2;">
-        <label>Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
-        <div style="display: flex; gap: 10px;">
-          <select id="wingSelect">
-            <option value="A1">A1</option>
-            <option value="B1">B1</option>
-            <option value="C1">C1</option>
-            <option value="D1">D1</option>
-          </select>
-          <select id="flatSelect">
-            <option value="101">101</option>
-            <option value="102">102</option>
-            <option value="103">103</option>
-            <option value="104">104</option>
-          </select>
-          <button type="button" class="btn btn-add" onclick="addFlatPreference()">+ Add Flat</button>
+  
+  <!-- TAB 1: CALCULATOR -->
+  <div id="calculatorTab" class="tab-content active">
+    <div class="card">
+      <h3>Unit Rate & Cost Calculator</h3>
+      <div class="grid">
+        <div class="form-group">
+          <label>Carpet Area (Sq. Ft.)</label>
+          <input type="number" id="carpetArea" placeholder="e.g. 1050" oninput="calculateUnit()">
         </div>
-        <div id="selectedFlatsList" style="margin-top: 5px; font-weight: bold; color: #1a73e8;"></div>
+        <div class="form-group">
+          <label>Rate per Sq. Ft. (₹)</label>
+          <input type="number" id="ratePerSqFt" placeholder="e.g. 3500" oninput="calculateUnit()">
+        </div>
+        <div class="form-group">
+          <label>Extra Charges / Parking (₹)</label>
+          <input type="number" id="extraCharges" placeholder="e.g. 150000" oninput="calculateUnit()">
+        </div>
+      </div>
+
+      <div class="calc-box">
+        <div><strong>Base Cost:</strong> ₹<span id="baseCost">0</span></div>
+        <div class="calc-result">Final Total Amount: ₹<span id="totalCost">0</span></div>
       </div>
     </div>
-
-    <button type="button" class="btn" style="margin-top: 20px;" onclick="submitClientRecord()">SUBMIT & SAVE RECORD</button>
   </div>
 
-  <!-- Database Table -->
-  <div class="card">
-    <h3>Past Customer Database & Live Call Log</h3>
-    <div class="form-group">
-      <input type="text" id="searchInput" placeholder="Type to search..." onkeyup="filterClientTable()">
-    </div>
+  <!-- TAB 2: CLIENT DETAILS & LEAD MANAGER -->
+  <div id="clientDetailsTab" class="tab-content">
     
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Type</th>
-            <th>Business</th>
-            <th>Mo No</th>
-            <th>Gaam</th>
-            <th>Live Status Update</th>
-          </tr>
-        </thead>
-        <tbody id="clientTableBody">
-          <!-- Rows render dynamically -->
-        </tbody>
-      </table>
+    <!-- Add New Record Form -->
+    <div class="card">
+      <h3 style="color: #1a73e8; margin-top: 0;">Add New Customer Record</h3>
+      
+      <div class="grid">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="firstName" placeholder="e.g. Babubhai">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lastName" placeholder="e.g. Gadhiya">
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 15px;">
+        <div class="form-group">
+          <label>Gaam</label>
+          <input type="text" id="gaam" placeholder="e.g. Ugamedi">
+        </div>
+        <div class="form-group">
+          <label>Taluka</label>
+          <input type="text" id="taluka" placeholder="e.g. Gadhada">
+        </div>
+        <div class="form-group">
+          <label>District</label>
+          <input type="text" id="district" placeholder="e.g. Bhavnagar">
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 15px;">
+        <div class="form-group">
+          <label>Business</label>
+          <select id="businessSelect" onchange="toggleCustomBusiness()">
+            <option value="Diamond">Diamond</option>
+            <option value="Textile">Textile</option>
+            <option value="school">School</option>
+            <option value="Broker">Broker</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" id="customBusiness" placeholder="Enter Business Name" style="display:none; margin-top:5px;">
+        </div>
+        <div class="form-group">
+          <label>Mo No (Mobile)</label>
+          <input type="text" id="moNo" placeholder="e.g. 9825195811">
+        </div>
+        <div class="form-group">
+          <label>Visiting Date</label>
+          <input type="date" id="visitingDate">
+        </div>
+        <div class="form-group">
+          <label>Type (Party / Broker / Reference)</label>
+          <select id="partyType" onchange="togglePartyDetails()">
+            <option value="Party">Party</option>
+            <option value="Broker">Broker</option>
+            <option value="Reference">Reference</option>
+            <option value="Party via Broker">Party via Broker</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="referenceGroup" class="form-group" style="display:none; margin-top: 15px;">
+        <label>Reference Details</label>
+        <input type="text" id="referenceDetails" placeholder="e.g. Jayeshkaka Kakadiya">
+      </div>
+
+      <div id="brokerGroup" class="grid" style="display:none; margin-top: 15px;">
+        <div class="form-group">
+          <label>Broker Full Name</label>
+          <input type="text" id="brokerFullName" placeholder="e.g. Ganeshbhai Lathiya">
+        </div>
+        <div class="form-group">
+          <label>Broker Mobile</label>
+          <input type="text" id="brokerMobile" placeholder="e.g. 9824493727">
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 15px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
+          <div style="display: flex; gap: 10px;">
+            <select id="wingSelect">
+              <option value="A1">A1</option>
+              <option value="B1">B1</option>
+              <option value="C1">C1</option>
+              <option value="D1">D1</option>
+            </select>
+            <select id="flatSelect">
+              <option value="101">101</option>
+              <option value="102">102</option>
+              <option value="103">103</option>
+              <option value="104">104</option>
+            </select>
+            <button type="button" class="btn btn-add" onclick="addFlatPreference()">+ Add Flat</button>
+          </div>
+          <div id="selectedFlatsList" style="margin-top: 5px; font-weight: bold; color: #1a73e8;"></div>
+        </div>
+      </div>
+
+      <button type="button" class="btn" style="margin-top: 20px;" onclick="submitClientRecord()">SUBMIT & SAVE RECORD</button>
     </div>
 
-    <button type="button" class="btn btn-green" onclick="exportToCSV()">EXPORT TO CSV / EXCEL</button>
+    <!-- Past Database Table -->
+    <div class="card">
+      <h3 style="margin-top: 0;">Past Customer Database & Live Call Log</h3>
+      
+      <div class="badge-bar">
+        <span class="badge badge-grey">Grey - Normal Flat</span>
+        <span class="badge badge-blue">Blue - Flat with Extra Balcony</span>
+        <span class="badge badge-orange">Orange - Pent House</span>
+      </div>
+
+      <div class="form-group">
+        <input type="text" id="searchInput" placeholder="Search Lead (by Name, Mobile, Gaam, Type, Status, Date, Broker)" onkeyup="filterClientTable()">
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Type</th>
+              <th>Business</th>
+              <th>Mo No</th>
+              <th>Gaam</th>
+              <th>Live Status Update</th>
+            </tr>
+          </thead>
+          <tbody id="clientTableBody">
+            <!-- Rows render dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <button type="button" class="btn btn-green" onclick="exportToCSV()">EXPORT TO CSV / EXCEL</button>
+    </div>
+
   </div>
 </div>
 
@@ -166,8 +230,29 @@
 
   let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
   let currentSelectedFlats = [];
-  let editingClientId = null;
 
+  // Tab switching
+  function switchTab(tabId, btnElement) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btnElement.classList.add('active');
+  }
+
+  // Calculator Logic
+  function calculateUnit() {
+    const area = parseFloat(document.getElementById('carpetArea').value) || 0;
+    const rate = parseFloat(document.getElementById('ratePerSqFt').value) || 0;
+    const extra = parseFloat(document.getElementById('extraCharges').value) || 0;
+
+    const base = area * rate;
+    const total = base + extra;
+
+    document.getElementById('baseCost').innerText = base.toLocaleString('en-IN');
+    document.getElementById('totalCost').innerText = total.toLocaleString('en-IN');
+  }
+
+  // Form Field Toggles
   function toggleCustomBusiness() {
     const bus = document.getElementById('businessSelect').value;
     document.getElementById('customBusiness').style.display = bus === 'Other' ? 'block' : 'none';
@@ -189,6 +274,7 @@
     }
   }
 
+  // Record Submission
   function submitClientRecord() {
     const busSelect = document.getElementById('businessSelect').value;
     let finalBusiness = busSelect;
@@ -223,7 +309,7 @@
     }
 
     const recordPayload = {
-      id: editingClientId !== null ? editingClientId : Date.now(),
+      id: Date.now(),
       firstName: firstName,
       lastName: document.getElementById('lastName').value.trim(),
       gaam: document.getElementById('gaam').value.trim(),
@@ -240,13 +326,7 @@
     };
 
     // Save locally
-    if (editingClientId !== null) {
-      const index = clientRecords.findIndex(c => c.id === editingClientId);
-      if (index !== -1) clientRecords[index] = recordPayload;
-      editingClientId = null;
-    } else {
-      clientRecords.unshift(recordPayload);
-    }
+    clientRecords.unshift(recordPayload);
     localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
 
     // Post to Google Sheets
@@ -318,6 +398,9 @@
     a.download = 'leads.csv';
     a.click();
   }
+
+  // Set default date to today
+  document.getElementById('visitingDate').valueAsDate = new Date();
 
   // Initial Render
   renderClientTable();
