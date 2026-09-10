@@ -428,6 +428,14 @@
       gap: 10px;
       margin-top: 10px;
     }
+
+    .sync-status {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-align: right;
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -582,7 +590,6 @@
             
             <input type="text" id="referenceDetails" placeholder="Enter Reference Name / Details" style="display: none; margin-top: 6px;" />
 
-            <!-- Dynamic Broker Input Row for "Party via Broker" -->
             <div id="brokerDetailsBox" class="dynamic-fields-row" style="display: none;">
               <div class="form-group">
                 <input type="text" id="brokerFullName" placeholder="Broker Full Name" />
@@ -625,6 +632,8 @@
             <span class="legend-item"><span class="legend-box orange"></span> Orange - Pent House</span>
           </div>
         </div>
+        
+        <div id="syncStatus" class="sync-status">Syncing with Google Sheet...</div>
 
         <div class="form-group">
           <label for="searchQuery" style="min-height: auto; margin-bottom: 4px;">Search Lead (by Name, Mobile, Gaam, Type, Status, Date, Broker)</label>
@@ -657,6 +666,9 @@
   </div>
 
   <script>
+    // GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbzixDqYmaGkZqzvz3RxfsxdDZ4JD1orTUN_1KmcrhGXqCBwpFf6WZXEnvu65fQP2OfKQQ/exec";
+
     const inventory = {
       "A1": {
         "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
@@ -713,9 +725,42 @@
       "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
     ];
 
-    let clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
+    let clientRecords = [];
     let currentSelectedFlats = [];
     let editingClientId = null;
+
+    async function loadRecordsFromSheet() {
+      document.getElementById('syncStatus').innerText = "Syncing with Google Sheet...";
+      try {
+        const response = await fetch(GOOGLE_SHEET_API);
+        const data = await response.json();
+        clientRecords = data.map(item => ({
+          ...item,
+          flatsInquired: Array.isArray(item.flatsInquired) ? item.flatsInquired : (item.flatsInquired ? String(item.flatsInquired).split(', ') : [])
+        })).reverse();
+        document.getElementById('syncStatus').innerText = "✅ Live Data Synced";
+      } catch (err) {
+        document.getElementById('syncStatus').innerText = "⚠️ Offline Mode (Fallback to Local Storage)";
+        clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
+      }
+      renderClientTable();
+    }
+
+    async function pushRecordToSheet(action, recordOrId) {
+      document.getElementById('syncStatus').innerText = "Saving to Google Sheet...";
+      const payload = action === "delete" ? { action, id: recordOrId } : { action, record: recordOrId };
+      try {
+        await fetch(GOOGLE_SHEET_API, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('syncStatus').innerText = "✅ Saved to Google Sheet";
+      } catch (err) {
+        document.getElementById('syncStatus').innerText = "⚠️ Failed to sync online";
+      }
+    }
 
     function onBuildingChange() {
       const bldg = document.getElementById('buildingSelect').value;
@@ -874,7 +919,7 @@
       document.getElementById('visitingDate').value = today;
     }
 
-    function submitClientRecord() {
+    async function submitClientRecord() {
       const busSelect = document.getElementById('businessSelect').value;
       let finalBusiness = busSelect;
       if (busSelect === 'Other') {
@@ -907,11 +952,11 @@
         return;
       }
 
+      let targetRecord;
       if (editingClientId !== null) {
-        // UPDATE EXISTING RECORD
-        const index = clientRecords.findIndex(c => c.id === editingClientId);
+        const index = clientRecords.findIndex(c => String(c.id) === String(editingClientId));
         if (index !== -1) {
-          clientRecords[index] = {
+          targetRecord = {
             ...clientRecords[index],
             firstName: firstName,
             lastName: document.getElementById('lastName').value.trim(),
@@ -926,11 +971,11 @@
             brokerMobile: brokerMobile,
             flatsInquired: [...currentSelectedFlats]
           };
-          alert('Client record updated successfully!');
+          clientRecords[index] = targetRecord;
+          await pushRecordToSheet("update", targetRecord);
         }
       } else {
-        // CREATE NEW RECORD
-        const record = {
+        targetRecord = {
           id: Date.now(),
           firstName: firstName,
           lastName: document.getElementById('lastName').value.trim(),
@@ -946,8 +991,8 @@
           flatsInquired: [...currentSelectedFlats],
           status: "Brochure Sent in Whatsapp"
         };
-        clientRecords.unshift(record);
-        alert('Client record saved successfully!');
+        clientRecords.unshift(targetRecord);
+        await pushRecordToSheet("add", targetRecord);
       }
 
       localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
@@ -956,7 +1001,7 @@
     }
 
     function editClientRecord(id) {
-      const client = clientRecords.find(c => c.id === id);
+      const client = clientRecords.find(c => String(c.id) === String(id));
       if (!client) return;
 
       editingClientId = id;
@@ -969,7 +1014,6 @@
       document.getElementById('moNo').value = client.moNo || '';
       document.getElementById('visitingDate').value = client.visitingDate || '';
 
-      // Business Field handling
       if (['Diamond', 'Textile'].includes(client.business)) {
         document.getElementById('businessSelect').value = client.business;
         document.getElementById('customBusiness').value = '';
@@ -979,7 +1023,6 @@
       }
       toggleCustomBusiness();
 
-      // Type Field handling
       const pt = client.partyType || 'Party';
       if (pt.startsWith('Party via Broker')) {
         document.getElementById('partyType').value = 'Party via Broker';
@@ -996,16 +1039,13 @@
       }
       toggleTypeDetails();
 
-      // Flat Preference badges
       currentSelectedFlats = client.flatsInquired ? [...client.flatsInquired] : [];
       renderSelectedFlatBadges();
 
-      // Update Form Headers & Buttons
       document.getElementById('formHeader').innerText = 'Edit Customer Record';
       document.getElementById('submitBtn').innerText = 'UPDATE CLIENT RECORD';
       document.getElementById('cancelEditBtn').style.display = 'block';
 
-      // Scroll smoothly to form
       document.getElementById('clientFormCard').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -1028,7 +1068,7 @@
     }
 
     function sendWhatsAppMessage(id) {
-      const client = clientRecords.find(c => c.id === id);
+      const client = clientRecords.find(c => String(c.id) === String(id));
       if (!client) return;
 
       let cleanMobile = (client.moNo || '').replace(/\D/g, '');
@@ -1044,9 +1084,9 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      const handPointDown = String.fromCodePoint(0x1F447); // 👇
-      const checkMark     = String.fromCodePoint(0x2705);  // ✅
-      const foldedHands   = String.fromCodePoint(0x1F64F); // 🙏
+      const handPointDown = String.fromCodePoint(0x1F447);
+      const checkMark     = String.fromCodePoint(0x2705);
+      const foldedHands   = String.fromCodePoint(0x1F64F);
 
       const gujaratiMsg = `નમસ્તે ${clientName},\n\n` +
                           `અમારા પ્રોજેક્ટ *ડિવાઈન રિવેરા* માં રસ દર્શાવવા બદલ આભાર!\n\n` +
@@ -1071,11 +1111,11 @@
         return (c.firstName && c.firstName.toLowerCase().includes(query)) ||
                (c.lastName && c.lastName.toLowerCase().includes(query)) ||
                (c.business && c.business.toLowerCase().includes(query)) ||
-               (c.moNo && c.moNo.includes(query)) ||
+               (c.moNo && String(c.moNo).includes(query)) ||
                (c.gaam && c.gaam.toLowerCase().includes(query)) ||
                (c.partyType && c.partyType.toLowerCase().includes(query)) ||
                (c.brokerName && c.brokerName.toLowerCase().includes(query)) ||
-               (c.brokerMobile && c.brokerMobile.includes(query)) ||
+               (c.brokerMobile && String(c.brokerMobile).includes(query)) ||
                (c.status && c.status.toLowerCase().includes(query)) ||
                (c.visitingDate && c.visitingDate.toLowerCase().includes(query)) ||
                (flatText.toLowerCase().includes(query));
@@ -1113,7 +1153,7 @@
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
           <td>
-            <select class="table-select" onchange="updateClientStatus(${c.id}, this.value)">
+            <select class="table-select" onchange="updateClientStatus('${c.id}', this.value)">
               ${statusOptionsHtml}
             </select>
           </td>
@@ -1121,12 +1161,12 @@
           <td>${flatBadgesHtml}</td>
           <td>
             <div class="action-cell">
-              <button class="btn-whatsapp" onclick="sendWhatsAppMessage(${c.id})" title="Send Gujarati WhatsApp Message">
+              <button class="btn-whatsapp" onclick="sendWhatsAppMessage('${c.id}')" title="Send Gujarati WhatsApp Message">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
                 WhatsApp
               </button>
-              <button class="btn-edit" onclick="editClientRecord(${c.id})">Edit</button>
-              <button class="delete-btn" onclick="deleteClient(${c.id})">Delete</button>
+              <button class="btn-edit" onclick="editClientRecord('${c.id}')">Edit</button>
+              <button class="delete-btn" onclick="deleteClient('${c.id}')">Delete</button>
             </div>
           </td>
         `;
@@ -1134,22 +1174,24 @@
       });
     }
 
-    function updateClientStatus(id, newStatus) {
-      const target = clientRecords.find(c => c.id === id);
+    async function updateClientStatus(id, newStatus) {
+      const target = clientRecords.find(c => String(c.id) === String(id));
       if (target) {
         target.status = newStatus;
         localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        await pushRecordToSheet("update", target);
       }
     }
 
-    function deleteClient(id) {
+    async function deleteClient(id) {
       if (confirm('Are you sure you want to delete this record?')) {
-        clientRecords = clientRecords.filter(c => c.id !== id);
+        clientRecords = clientRecords.filter(c => String(c.id) !== String(id));
         localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
         if (editingClientId === id) {
           clearClientForm();
         }
         renderClientTable();
+        await pushRecordToSheet("delete", id);
       }
     }
 
@@ -1191,7 +1233,7 @@
       onBuildingChange();
       populatePrefFlatDropdown();
       setDefaultVisitingDate();
-      renderClientTable();
+      loadRecordsFromSheet();
     };
   </script>
 </body>
