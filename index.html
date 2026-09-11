@@ -240,6 +240,17 @@
       background-color: #1557b0;
     }
 
+    .btn-secondary {
+      background-color: #f1f3f4;
+      color: var(--primary-color);
+      border: 1px solid var(--border-color);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e8f0fe;
+    }
+
     .btn-success {
       background-color: var(--accent-green);
       color: white;
@@ -660,6 +671,8 @@
           </table>
         </div>
 
+        <button id="viewMoreBtn" class="btn btn-secondary" onclick="toggleViewMore()" style="display: none;">View More</button>
+
         <button class="btn btn-success" onclick="exportToCSV()" style="margin-top: 14px;">EXPORT TO CSV / EXCEL</button>
       </div>
     </div>
@@ -728,6 +741,7 @@
     let clientRecords = [];
     let currentSelectedFlats = [];
     let editingClientId = null;
+    let visibleRecordCount = 10;
 
     async function loadRecordsFromSheet() {
       document.getElementById('syncStatus').innerText = "Syncing with Google Sheet...";
@@ -1101,9 +1115,19 @@
       window.open(waUrl, '_blank');
     }
 
+    function toggleViewMore() {
+      if (visibleRecordCount >= clientRecords.length) {
+        visibleRecordCount = 10;
+      } else {
+        visibleRecordCount += 10;
+      }
+      renderClientTable();
+    }
+
     function renderClientTable() {
       const query = document.getElementById('searchQuery').value.toLowerCase();
       const tbody = document.getElementById('clientTableBody');
+      const viewMoreBtn = document.getElementById('viewMoreBtn');
       tbody.innerHTML = '';
 
       const filtered = clientRecords.filter(c => {
@@ -1123,10 +1147,14 @@
 
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No client records found</td></tr>';
+        viewMoreBtn.style.display = 'none';
         return;
       }
 
-      filtered.forEach(c => {
+      // If user is searching, show all matching results; otherwise limit by visibleRecordCount
+      const displayRecords = query.trim() !== "" ? filtered : filtered.slice(0, visibleRecordCount);
+
+      displayRecords.forEach(c => {
         const tr = document.createElement('tr');
         
         let statusOptionsHtml = '';
@@ -1172,6 +1200,18 @@
         `;
         tbody.appendChild(tr);
       });
+
+      // Manage View More button visibility & text
+      if (query.trim() !== "" || filtered.length <= 10) {
+        viewMoreBtn.style.display = 'none';
+      } else {
+        viewMoreBtn.style.display = 'block';
+        if (visibleRecordCount >= filtered.length) {
+          viewMoreBtn.innerText = 'Show Less';
+        } else {
+          viewMoreBtn.innerText = `View More (${filtered.length - displayRecords.length} remaining)`;
+        }
+      }
     }
 
     async function updateClientStatus(id, newStatus) {
