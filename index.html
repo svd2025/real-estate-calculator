@@ -1081,7 +1081,7 @@
       document.getElementById('cancelEditBtn').style.display = 'none';
     }
 
- function sendWhatsAppMessage(id) {
+function sendWhatsAppMessage(id) {
       const client = clientRecords.find(c => String(c.id) === String(id));
       if (!client) return;
 
@@ -1098,35 +1098,36 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      // Safe Unicode definitions using character code points
-      const foldHands  = String.fromCodePoint(0x1F64F);
-      const sparkle    = String.fromCodePoint(0x2728);
-      const building   = String.fromCodePoint(0x1F3E2);
-      const crane      = String.fromCodePoint(0x1F3D7);
-      const tree       = String.fromCodePoint(0x1F333);
-      const pin        = String.fromCodePoint(0x1F4CD);
-      const cityscape  = String.fromCodePoint(0x1F3D9);
-      const pointDown  = String.fromCodePoint(0x1F447);
-      const checkMark  = String.fromCodePoint(0x2705);
-      const phone      = String.fromCodePoint(0x1F4DE);
-      const bouquet    = String.fromCodePoint(0x1F490);
+      // Raw URL-encoded emojis (bypasses browser encoding bugs completely)
+      const foldHands  = "%F0%9F%99%8F"; // 🙏
+      const sparkle    = "%E2%9C%A8";     // ✨
+      const building   = "%F0%9F%8F%A2"; // 🏢
+      const crane      = "%F0%9F%8F%97"; // 🏗
+      const tree       = "%F0%9F%8C%B3"; // 🌳
+      const pin        = "%F0%9F%93%8D"; // 📍
+      const cityscape  = "%F0%9F%8F%99"; // 🏙
+      const pointDown  = "%F0%9F%91%87"; // 👇
+      const checkMark  = "%E2%9C%85";     // ✅
+      const phone      = "%F0%9F%90%9E"; // 📞
+      const bouquet    = "%F0%9F%92%90"; // 💐
 
-      const gujaratiMsg = `નમસ્તે ${clientName}, ${foldHands}\n\n` +
-                          `અમારા પ્રીમિયમ પ્રોજેક્ટ *ડિવાઈન રિવેરા (Divine Rivera)* માં રસ દર્શાવવા બદલ ખૂબ ખૂબ આભાર!\n\n` +
-                          `${sparkle} *પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*\n\n` +
-                          `${building} ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ\n` +
-                          `${crane} સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C ની Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ\n` +
-                          `${tree} S.M.C ના નવા વિશાળ ગાર્ડન ની એકદમ બાજુમાં\n` +
-                          `${pin} 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી\n` +
-                          `${cityscape} રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ\n\n` +
-                          `${pointDown} *પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*\n` +
-                          `${brochurePdfUrl}\n\n` +
-                          `${checkMark} *વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*\n\n` +
-                          `${phone} સંપર્ક: 9998293938\n\n` +
-                          `આપનો દિવસ શુભ રહે!\n` +
-                          `આભાર! ${bouquet}`;
+      // Build text string with standard URL encoding for new lines (%0A)
+      const msg = `નમસ્તે ${clientName}, ${foldHands}%0A%0A` +
+                  `અમારા પ્રીમિયમ પ્રોજેક્ટ *ડિવાઈન રિવેરા (Divine Rivera)* માં રસ દર્શાવવા બદલ ખૂબ ખૂબ આભાર!%0A%0A` +
+                  `${sparkle} *પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*%0A%0A` +
+                  `${building} ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ%0A` +
+                  `${crane} સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C ની Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ%0A` +
+                  `${tree} S.M.C ના નવા વિશાળ ગાર્ડન ની એકદમ બાજુમાં%0A` +
+                  `${pin} 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી%0A` +
+                  `${cityscape} રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ%0A%0A` +
+                  `${pointDown} *પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*%0A` +
+                  `${brochurePdfUrl}%0A%0A` +
+                  `${checkMark} *વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*%0A%0A` +
+                  `📞 સંપર્ક: 9998293938%0A%0A` +
+                  `આપનો દિવસ શુભ રહે!%0A` +
+                  `આભાર! ${bouquet}`;
 
-      const waUrl = `https://wa.me/${cleanMobile}?text=${encodeURIComponent(gujaratiMsg)}`;
+      const waUrl = `https://wa.me/${cleanMobile}?text=${msg}`;
       window.open(waUrl, '_blank');
     }
     function toggleViewMore() {
