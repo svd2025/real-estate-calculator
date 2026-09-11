@@ -1081,7 +1081,7 @@
       document.getElementById('cancelEditBtn').style.display = 'none';
     }
 
-    function sendWhatsAppMessage(id) {
+   function sendWhatsAppMessage(id) {
       const client = clientRecords.find(c => String(c.id) === String(id));
       if (!client) return;
 
@@ -1098,17 +1098,27 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      const handPointDown = String.fromCodePoint(0x1F447);
-      const checkMark     = String.fromCodePoint(0x2705);
-      const foldedHands   = String.fromCodePoint(0x1F64F);
+      const gujaratiMsg = `નમસ્તે ${clientName}, 🙏
 
-      const gujaratiMsg = `નમસ્તે ${clientName},\n\n` +
-                          `અમારા પ્રોજેક્ટ *ડિવાઈન રિવેરા* માં રસ દર્શાવવા બદલ આભાર!\n\n` +
-                          `${handPointDown} પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):\n${brochurePdfUrl}\n\n` +
-                          `${checkMark} અન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\n\n` +
-                          `આપનો દિવસ શુભ રહે!\n` +
-                          `${foldedHands}\n` +
-                          `આભાર!`;
+અમારા પ્રીમિયમ પ્રોજેક્ટ *ડિવાઈન રિવેરા (Divine Rivera)* માં રસ દર્શાવવા બદલ ખૂબ ખૂબ આભાર!
+
+✨ *પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*
+
+🏢 ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ
+🏗️ સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C નો Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ
+🌳 S.M.C ના નવા વિશાળ ઓક્સિજન પાર્ક ની એકદમ બાજુમાં
+📍 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી
+🏙️ રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ
+
+👇 *પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*
+${brochurePdfUrl}
+
+✅ *વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*
+
+📞 સંપર્ક: 9998293938
+
+આપનો દિવસ શુભ રહે!
+આભાર! 💐`;
 
       const encodedMsg = encodeURIComponent(gujaratiMsg);
       const waUrl = `https://wa.me/${cleanMobile}?text=${encodedMsg}`;
