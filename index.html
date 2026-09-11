@@ -1,299 +1,1240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Past Customer Database & Live Call Log</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Real Estate Unit Calculator & Lead Manager</title>
   <style>
+    :root {
+      --primary-color: #1a73e8;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #202124;
+      --border-color: #dadce0;
+      --accent-green: #34a853;
+      --whatsapp-green: #25d366;
+      --whatsapp-hover: #1ebc57;
+      --btn-danger: #d93025;
+      --btn-danger-hover: #b3261e;
+      --btn-edit: #1a73e8;
+      --btn-edit-hover: #1557b0;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: #f4f6f8;
-      padding: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding-bottom: 30px;
     }
 
-    /* Main Card Container */
-    .card {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 1200px;
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      max-width: 950px;
       margin: 0 auto;
+      padding: 12px;
     }
 
-    /* Header Styling */
-    .card-header {
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card-header-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
       flex-wrap: wrap;
       gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .card-title {
-      color: #1a73e8;
-      font-size: 20px;
-      font-weight: bold;
-      margin: 0;
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--primary-color);
     }
 
-    .legend-container {
+    .color-legend {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
-      font-size: 13px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
     .legend-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       background: #f1f3f4;
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
+      border: 1px solid #dadce0;
     }
 
     .legend-box {
       width: 12px;
       height: 12px;
-      border-radius: 2px;
+      border-radius: 3px;
+      display: inline-block;
     }
 
-    /* Search Box */
-    .search-section {
-      margin-bottom: 15px;
+    .legend-box.grey { background-color: #5f6368; }
+    .legend-box.blue { background-color: #1a73e8; }
+    .legend-box.orange { background-color: #ff9800; }
+
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .search-label {
+    label {
       display: block;
-      font-size: 13px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
       color: #5f6368;
-      margin-bottom: 5px;
+      line-height: 1.25;
+      min-height: 2.5em;
+      display: flex;
+      align-items: flex-end;
     }
 
-    .search-input {
+    input, select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #dadce0;
-      border-radius: 6px;
-      font-size: 14px;
+      height: 42px;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       outline: none;
+      background-color: #fff;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
 
-    .search-input:focus {
-      border-color: #1a73e8;
+    select {
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235f6368%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px auto;
+      padding-right: 28px;
     }
 
-    /* ========================================================= */
-    /* TABLE CONTAINER - FIXES BOTH SCROLLBARS IN PLACE          */
-    /* ========================================================= */
-    .table-container {
-      max-height: 480px;            /* Limits vertical height */
-      overflow-x: auto;             /* Always displays bottom horizontal scrollbar inside box */
-      overflow-y: auto;             /* Allows smooth vertical scrolling inside box */
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      background-color: #ffffff;
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+    }
+
+    input[readonly] {
+      background-color: #e8f0fe;
+      font-weight: 600;
+      color: #1a73e8;
+    }
+
+    .row-2 {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .row-2 .form-group {
+      flex: 1;
+    }
+
+    .row-3 {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .row-3 .form-group {
+      flex: 1;
+    }
+
+    .dynamic-fields-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .dynamic-fields-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+      .row-3, .row-2, .dynamic-fields-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      label {
+        min-height: auto;
+        margin-bottom: 4px;
+      }
+    }
+
+    .summary-box {
+      background-color: #e8f0fe;
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent-green);
+      border-top: 1px dashed #aecbfa;
+      padding-top: 8px;
+      margin-bottom: 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1557b0;
+    }
+
+    .btn-success {
+      background-color: var(--accent-green);
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: var(--btn-danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--btn-danger-hover);
+    }
+
+    .btn-whatsapp {
+      background-color: var(--whatsapp-green);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: var(--whatsapp-hover);
+    }
+
+    .btn-edit {
+      background-color: var(--btn-edit);
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .btn-edit:hover {
+      background-color: var(--btn-edit-hover);
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: #e0e0e0;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 10px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;             /* Forces scrollbar when screen is narrower than columns */
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
       text-align: left;
+      white-space: nowrap;
     }
 
-    /* Sticky Header - Keeps table headers visible while scrolling down */
-    thead th {
-      position: sticky;
-      top: 0;
+    th {
       background-color: #e8f0fe;
-      color: #1a73e8;
-      font-size: 13px;
-      font-weight: bold;
-      padding: 12px 10px;
-      border-bottom: 2px solid #aecbfa;
-      white-space: nowrap;
-      z-index: 2;
+      color: var(--primary-color);
+      font-weight: 600;
     }
 
-    tbody td {
-      padding: 10px;
-      border-bottom: 1px solid #e0e0e0;
-      font-size: 13px;
-      color: #3c4043;
-      white-space: nowrap;
-    }
-
-    tbody tr:nth-child(even) {
+    tr:nth-child(even) {
       background-color: #f8f9fa;
     }
 
-    tbody tr:hover {
-      background-color: #f1f3f4;
-    }
-
-    /* Buttons & Badges */
-    .status-btn {
-      background: #ffffff;
-      border: 1px solid #dadce0;
-      padding: 6px 12px;
+    .table-select {
+      padding: 4px 6px;
+      font-size: 0.85rem;
       border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      color: #3c4043;
+      height: auto;
     }
 
-    .status-btn:hover {
-      background: #f1f3f4;
+    .action-cell {
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
 
-    .export-btn {
-      width: 100%;
-      background-color: #34a853;
+    .delete-btn {
+      background: var(--btn-danger);
       color: white;
       border: none;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 6px;
+      padding: 5px 8px;
+      border-radius: 4px;
       cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 0.8rem;
     }
 
-    .export-btn:hover {
-      background-color: #2d9247;
+    .flat-selector-box {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 480px) {
+      .flat-selector-box {
+        flex-wrap: wrap;
+      }
+      .flat-selector-box select {
+        flex: 1 1 40% !important;
+      }
+      .btn-add-flat {
+        width: 100%;
+      }
+    }
+
+    .btn-add-flat {
+      height: 42px;
+      padding: 0 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .selected-flats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .flat-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: white;
+      gap: 4px;
+    }
+
+    .badge-penthouse { background-color: #ff9800; }
+    .badge-balcony { background-color: #1a73e8; }
+    .badge-normal { background-color: #5f6368; }
+
+    .flat-badge .remove-flat {
+      cursor: pointer;
+      font-weight: normal;
+      margin-left: 4px;
+    }
+
+    .button-group-flex {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .sync-status {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-align: right;
+      margin-bottom: 4px;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <!-- Header Title and Legends -->
-    <div class="card-header">
-      <h2 class="card-title">Past Customer Database & Live Call Log</h2>
-      <div class="legend-container">
-        <div class="legend-item">
-          <span class="legend-box" style="background: #80868b;"></span> Grey - Normal Flat
+  <header>Unit Calculator & Lead Manager</header>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('calculator', event)">Calculator</button>
+      <button class="tab-btn" onclick="switchTab('lead-info', event)">Client Details</button>
+    </div>
+
+    <!-- TAB 1: CALCULATOR -->
+    <div id="calculator" class="tab-content active">
+      <div class="card">
+        <h2>Unit Selection</h2>
+        <div class="row-2">
+          <div class="form-group">
+            <label for="buildingSelect">Building</label>
+            <select id="buildingSelect" onchange="onBuildingChange()">
+              <option value="A1">A1</option>
+              <option value="B1">B1</option>
+              <option value="C1">C1</option>
+              <option value="D1">D1</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="flatSelect">Flat Number</label>
+            <select id="flatSelect" onchange="loadFlatData()"></select>
+          </div>
         </div>
-        <div class="legend-item">
-          <span class="legend-box" style="background: #1a73e8;"></span> Blue - Flat with Extra Balcony
+
+        <div class="row-3">
+          <div class="form-group">
+            <label for="baseArea">Square Feet</label>
+            <input type="number" id="baseArea" value="2700" />
+          </div>
+          <div class="form-group">
+            <label for="balconyArea">Extra Balcony</label>
+            <input type="number" id="balconyArea" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="totalAreaInput">Total Sq Ft</label>
+            <input type="number" id="totalAreaInput" readonly />
+          </div>
         </div>
-        <div class="legend-item">
-          <span class="legend-box" style="background: #f9ab00;"></span> Orange - Pent House
+
+        <div class="row-3">
+          <div class="form-group">
+            <label for="ratePerSqFt">Rate / sq ft (₹)</label>
+            <input type="number" id="ratePerSqFt" placeholder="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="floorRise">Floor Rise (₹)</label>
+            <select id="floorRise" onchange="calculate()">
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="totalFloorRise">Total Floor Rise</label>
+            <input type="number" id="totalFloorRise" readonly />
+          </div>
         </div>
       </div>
+
+      <div class="card">
+        <h2>Cost Breakdown</h2>
+        <div class="summary-box">
+          <div class="summary-row">
+            <span>Total Area:</span>
+            <strong id="outTotalArea">0 sq ft</strong>
+          </div>
+          <div class="summary-row">
+            <span>Base Cost:</span>
+            <strong id="outBaseCost">₹ 0</strong>
+          </div>
+          <div class="summary-row">
+            <span>Total Floor Rise Cost:</span>
+            <strong id="outFloorRiseCost">₹ 0</strong>
+          </div>
+          <div class="summary-row total">
+            <span>Final Total:</span>
+            <strong id="outFinalTotal">₹ 0</strong>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-danger" onclick="resetToDefault()">CLEAR</button>
     </div>
 
-    <!-- Search Section -->
-    <div class="search-section">
-      <label class="search-label">Search Lead (by Name, Mobile, Gaam, Type, Status, Date, Broker)</label>
-      <input type="text" id="searchInput" class="search-input" placeholder="Type to search..." onkeyup="filterTable()">
-    </div>
+    <!-- TAB 2: CLIENT DETAILS -->
+    <div id="lead-info" class="tab-content">
+      <div class="card" id="clientFormCard">
+        <h2 id="formHeader">Add New Customer Record</h2>
+        
+        <div class="row-2">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="e.g. Babubhai" />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="e.g. Gadhiya" />
+          </div>
+        </div>
 
-    <!-- Scrollable Table Wrapper -->
-    <div class="table-container">
-      <table id="leadsTable">
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Type</th>
-            <th>Business</th>
-            <th>Mo No</th>
-            <th>Gaam</th>
-            <th>Taluka</th>
-            <th>District</th>
-            <th>Live Status Update</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <!-- Data populated dynamically via Web App API -->
-        </tbody>
-      </table>
-    </div>
+        <div class="row-3">
+          <div class="form-group">
+            <label for="gaam">Gaam</label>
+            <input type="text" id="gaam" placeholder="e.g. Ugamedi" />
+          </div>
+          <div class="form-group">
+            <label for="taluka">Taluka</label>
+            <input type="text" id="taluka" placeholder="e.g. Gadhada" />
+          </div>
+          <div class="form-group">
+            <label for="district">District</label>
+            <input type="text" id="district" placeholder="e.g. Bhavnagar" />
+          </div>
+        </div>
 
-    <!-- Action Buttons -->
-    <button class="export-btn" onclick="exportToCSV()">Export to CSV / Excel</button>
+        <div class="row-2">
+          <div class="form-group">
+            <label for="businessSelect">Business</label>
+            <select id="businessSelect" onchange="toggleCustomBusiness()">
+              <option value="Diamond">Diamond</option>
+              <option value="Textile">Textile</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" id="customBusiness" placeholder="Enter custom business name" style="display: none; margin-top: 6px;" />
+          </div>
+          <div class="form-group">
+            <label for="moNo">Mo No (Mobile)</label>
+            <input type="tel" id="moNo" placeholder="e.g. 9825195811" />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="form-group">
+            <label for="visitingDate">Visiting Date</label>
+            <input type="date" id="visitingDate" />
+          </div>
+          <div class="form-group">
+            <label for="partyType">Type (Party / Broker / Reference)</label>
+            <select id="partyType" onchange="toggleTypeDetails()">
+              <option value="Party">Party</option>
+              <option value="Party via Broker">Party via Broker</option>
+              <option value="Broker">Broker</option>
+              <option value="Reference">Reference</option>
+            </select>
+            
+            <input type="text" id="referenceDetails" placeholder="Enter Reference Name / Details" style="display: none; margin-top: 6px;" />
+
+            <div id="brokerDetailsBox" class="dynamic-fields-row" style="display: none;">
+              <div class="form-group">
+                <input type="text" id="brokerFullName" placeholder="Broker Full Name" />
+              </div>
+              <div class="form-group">
+                <input type="tel" id="brokerMobile" placeholder="Broker Mobile No." />
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label style="min-height: auto; margin-bottom: 6px;">Kaya Flat ni Vaat Thai Hati (Flat Preference)</label>
+          <div class="flat-selector-box">
+            <select id="prefWingSelect" style="flex: 1;" onchange="populatePrefFlatDropdown()">
+              <option value="A1">A1</option>
+              <option value="B1">B1</option>
+              <option value="C1">C1</option>
+              <option value="D1">D1</option>
+            </select>
+            <select id="prefFlatSelect" style="flex: 1;"></select>
+            <button type="button" class="btn-add-flat" onclick="addSelectedFlatPreference()">+ Add Flat</button>
+          </div>
+          <div id="selectedFlatsList" class="selected-flats-container"></div>
+        </div>
+
+        <div class="button-group-flex">
+          <button class="btn btn-primary" id="submitBtn" onclick="submitClientRecord()">SUBMIT & SAVE RECORD</button>
+          <button class="btn btn-danger" id="cancelEditBtn" onclick="clearClientForm()" style="display: none; width: 30%;">CANCEL EDIT</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-flex">
+          <h2>Past Customer Database & Live Call Log</h2>
+          <div class="color-legend">
+            <span class="legend-item"><span class="legend-box grey"></span> Grey - Normal Flat</span>
+            <span class="legend-item"><span class="legend-box blue"></span> Blue - Flat with Extra Balcony</span>
+            <span class="legend-item"><span class="legend-box orange"></span> Orange - Pent House</span>
+          </div>
+        </div>
+        
+        <div id="syncStatus" class="sync-status">Syncing with Google Sheet...</div>
+
+        <div class="form-group">
+          <label for="searchQuery" style="min-height: auto; margin-bottom: 4px;">Search Lead (by Name, Mobile, Gaam, Type, Status, Date, Broker)</label>
+          <input type="text" id="searchQuery" oninput="renderClientTable()" placeholder="Type to search..." />
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Type</th>
+                <th>Business</th>
+                <th>Mo No</th>
+                <th>Gaam</th>
+                <th>Live Status Update</th>
+                <th>Visiting Date</th>
+                <th>Flat Preference</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="clientTableBody"></tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-success" onclick="exportToCSV()" style="margin-top: 14px;">EXPORT TO CSV / EXCEL</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // URL to your Google Apps Script Web App Endpoint
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbweATmPUGlMBdqgJ03tyIylJQb-CcdPPxw-reM5LdeI18cnnf0639-ODlmdD6bWvJlTEQ/exec";
+    // GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbweATmPUGlMBdqgJ03tyIylJQb-CcdPPxw-reM5LdeI18cnnf0639-ODlmdD6bWvJlTEQ/exec";
 
-    // Fetch leads on page load
-    document.addEventListener("DOMContentLoaded", fetchLeads);
+    const inventory = {
+      "A1": {
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1001":{base:2700,balcony:0},"1002":{base:2700,balcony:0},
+        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},"1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
+        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},"1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
+        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},"1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
+        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},"1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
+        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},"2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
+      },
+      "B1": {
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1001":{base:2700,balcony:0},"1002":{base:2700,balcony:0},
+        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},"1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
+        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},"1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
+        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},"1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
+        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},"1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
+        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},"2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
+      },
+      "C1": {
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1001":{base:2700,balcony:0},"1002":{base:2700,balcony:0},
+        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},"1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
+        "1301":{base:2700,balcony:121},"1302":{base:2700,balcony:121},"1401":{base:2700,balcony:173},"1402":{base:2700,balcony:0},
+        "1501":{base:2700,balcony:120},"1502":{base:2700,balcony:120},"1601":{base:2700,balcony:126},"1602":{base:2700,balcony:126},
+        "1701":{base:2700,balcony:95},"1702":{base:2700,balcony:95},"1801":{base:2700,balcony:125},"1802":{base:2700,balcony:125},
+        "1901":{base:2700,balcony:60},"1902":{base:2700,balcony:60},"2001":{base:5033,balcony:0},"2002":{base:5033,balcony:0}
+      },
+      "D1": {
+        "101":{base:2700,balcony:0},"102":{base:2700,balcony:0},"201":{base:2700,balcony:0},"202":{base:2700,balcony:0},
+        "301":{base:2700,balcony:0},"302":{base:2700,balcony:0},"401":{base:2700,balcony:0},"402":{base:2700,balcony:0},
+        "501":{base:2700,balcony:0},"502":{base:2700,balcony:0},"601":{base:2700,balcony:0},"602":{base:2700,balcony:0},
+        "701":{base:2700,balcony:0},"702":{base:2700,balcony:0},"801":{base:2700,balcony:0},"802":{base:2700,balcony:0},
+        "901":{base:2700,balcony:0},"902":{base:2700,balcony:0},"1001":{base:2700,balcony:0},"1002":{base:2700,balcony:0},
+        "1101":{base:2700,balcony:0},"1102":{base:2700,balcony:0},"1201":{base:2700,balcony:0},"1202":{base:2700,balcony:0},
+        "1301":{base:2700,balcony:0},"1302":{base:2700,balcony:0},"1401":{base:2700,balcony:0},"1402":{base:2700,balcony:0},
+        "1501":{base:2700,balcony:95},"1502":{base:2700,balcony:95},"1601":{base:2700,balcony:0},"1602":{base:2700,balcony:0},
+        "1701":{base:2700,balcony:60},"1702":{base:2700,balcony:60},"1801":{base:2700,balcony:0},"1802":{base:2700,balcony:0},
+        "1901":{base:2700,balcony:71},"1902":{base:2700,balcony:71},"2001":{base:4716,balcony:0},"2002":{base:4716,balcony:0}
+      }
+    };
 
-    function fetchLeads() {
-      fetch(WEB_APP_URL)
-        .then(response => response.json())
-        .then(data => {
-          if(data.error) {
-            console.error("Error from script:", data.error);
-            return;
-          }
-          renderTable(data);
-        })
-        .catch(err => console.error("Error fetching data:", err));
+    const statusOptions = [
+      "Brochure Sent in Whatsapp", "Call Busy", "Call Cut", "Follow-up Required",
+      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
+    ];
+
+    let clientRecords = [];
+    let currentSelectedFlats = [];
+    let editingClientId = null;
+
+    async function loadRecordsFromSheet() {
+      document.getElementById('syncStatus').innerText = "Syncing with Google Sheet...";
+      try {
+        const response = await fetch(GOOGLE_SHEET_API);
+        const data = await response.json();
+        clientRecords = data.map(item => ({
+          ...item,
+          flatsInquired: Array.isArray(item.flatsInquired) ? item.flatsInquired : (item.flatsInquired ? String(item.flatsInquired).split(', ') : [])
+        })).reverse();
+        document.getElementById('syncStatus').innerText = "✅ Live Data Synced";
+      } catch (err) {
+        document.getElementById('syncStatus').innerText = "⚠️ Offline Mode (Fallback to Local Storage)";
+        clientRecords = JSON.parse(localStorage.getItem('realEstateClients')) || [];
+      }
+      renderClientTable();
     }
 
-    function renderTable(leads) {
-      const tbody = document.getElementById("tableBody");
-      tbody.innerHTML = "";
+    async function pushRecordToSheet(action, recordOrId) {
+      document.getElementById('syncStatus').innerText = "Saving to Google Sheet...";
+      const payload = action === "delete" ? { action, id: recordOrId } : { action, record: recordOrId };
+      try {
+        await fetch(GOOGLE_SHEET_API, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('syncStatus').innerText = "✅ Saved to Google Sheet";
+      } catch (err) {
+        document.getElementById('syncStatus').innerText = "⚠️ Failed to sync online";
+      }
+    }
 
-      leads.forEach(lead => {
-        const tr = document.createElement("tr");
+    function onBuildingChange() {
+      const bldg = document.getElementById('buildingSelect').value;
+      document.getElementById('floorRise').value = (bldg === 'D1') ? "100" : "50";
+      populateFlatDropdown();
+    }
+
+    function populateFlatDropdown() {
+      const bldg = document.getElementById('buildingSelect').value;
+      const flatSelect = document.getElementById('flatSelect');
+      flatSelect.innerHTML = '';
+      
+      Object.keys(inventory[bldg]).forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.innerText = f;
+        flatSelect.appendChild(opt);
+      });
+      loadFlatData();
+    }
+
+    function loadFlatData() {
+      const bldg = document.getElementById('buildingSelect').value;
+      const flat = document.getElementById('flatSelect').value;
+      if (inventory[bldg] && inventory[bldg][flat]) {
+        document.getElementById('baseArea').value = inventory[bldg][flat].base;
+        document.getElementById('balconyArea').value = inventory[bldg][flat].balcony;
+        calculate();
+      }
+    }
+
+    function calculate() {
+      const baseArea = parseFloat(document.getElementById('baseArea').value) || 0;
+      const balconyArea = parseFloat(document.getElementById('balconyArea').value) || 0;
+      const rate = parseFloat(document.getElementById('ratePerSqFt').value) || 0;
+      const floorRiseRate = parseFloat(document.getElementById('floorRise').value) || 0;
+      const flatNumber = document.getElementById('flatSelect').value || "101";
+
+      const totalArea = baseArea + balconyArea;
+      document.getElementById('totalAreaInput').value = totalArea;
+
+      const floorNo = Math.floor(parseInt(flatNumber, 10) / 100);
+      const floorMultiplier = floorNo > 1 ? (floorNo - 1) : 0;
+      const totalFloorRisePerSqFt = floorMultiplier * floorRiseRate;
+      document.getElementById('totalFloorRise').value = totalFloorRisePerSqFt;
+
+      const baseCost = totalArea * rate;
+      const totalFloorRiseCost = totalFloorRisePerSqFt * totalArea;
+      const finalTotal = baseCost + totalFloorRiseCost;
+
+      document.getElementById('outTotalArea').innerText = totalArea.toLocaleString('en-IN') + ' sq ft';
+      document.getElementById('outBaseCost').innerText = '₹ ' + baseCost.toLocaleString('en-IN');
+      document.getElementById('outFloorRiseCost').innerText = '₹ ' + totalFloorRiseCost.toLocaleString('en-IN');
+      document.getElementById('outFinalTotal').innerText = '₹ ' + finalTotal.toLocaleString('en-IN');
+    }
+
+    function resetToDefault() {
+      document.getElementById('buildingSelect').value = 'A1';
+      document.getElementById('ratePerSqFt').value = 0;
+      onBuildingChange();
+    }
+
+    function toggleCustomBusiness() {
+      const select = document.getElementById('businessSelect');
+      const customInput = document.getElementById('customBusiness');
+      if (select.value === 'Other') {
+        customInput.style.display = 'block';
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+      }
+    }
+
+    function toggleTypeDetails() {
+      const select = document.getElementById('partyType');
+      const refInput = document.getElementById('referenceDetails');
+      const brokerBox = document.getElementById('brokerDetailsBox');
+
+      if (select.value === 'Reference') {
+        refInput.style.display = 'block';
+        brokerBox.style.display = 'none';
+        document.getElementById('brokerFullName').value = '';
+        document.getElementById('brokerMobile').value = '';
+      } else if (select.value === 'Party via Broker') {
+        brokerBox.style.display = 'flex';
+        refInput.style.display = 'none';
+        refInput.value = '';
+      } else {
+        refInput.style.display = 'none';
+        brokerBox.style.display = 'none';
+        refInput.value = '';
+        document.getElementById('brokerFullName').value = '';
+        document.getElementById('brokerMobile').value = '';
+      }
+    }
+
+    function populatePrefFlatDropdown() {
+      const bldg = document.getElementById('prefWingSelect').value;
+      const prefFlatSelect = document.getElementById('prefFlatSelect');
+      prefFlatSelect.innerHTML = '';
+
+      Object.keys(inventory[bldg]).forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.innerText = f;
+        prefFlatSelect.appendChild(opt);
+      });
+    }
+
+    function addSelectedFlatPreference() {
+      const wing = document.getElementById('prefWingSelect').value;
+      const flat = document.getElementById('prefFlatSelect').value;
+      const itemStr = `${wing} - ${flat}`;
+
+      if (!currentSelectedFlats.includes(itemStr)) {
+        currentSelectedFlats.push(itemStr);
+        renderSelectedFlatBadges();
+      }
+    }
+
+    function removeFlatPreference(flatStr) {
+      currentSelectedFlats = currentSelectedFlats.filter(f => f !== flatStr);
+      renderSelectedFlatBadges();
+    }
+
+    function renderSelectedFlatBadges() {
+      const container = document.getElementById('selectedFlatsList');
+      container.innerHTML = '';
+      currentSelectedFlats.forEach(fStr => {
+        const badge = document.createElement('span');
+        const badgeType = getFlatBadgeType(fStr);
+        badge.className = `flat-badge ${badgeType.className}`;
+        badge.innerHTML = `${fStr} <span class="remove-flat" onclick="removeFlatPreference('${fStr}')">&times;</span>`;
+        container.appendChild(badge);
+      });
+    }
+
+    function getFlatBadgeType(flatStr) {
+      const parts = flatStr.split(' - ');
+      if (parts.length === 2) {
+        const wing = parts[0].trim();
+        const flat = parts[1].trim();
+
+        if (flat === '2001' || flat === '2002') {
+          return { className: 'badge-penthouse', label: 'Penthouse' };
+        }
+        if (inventory[wing] && inventory[wing][flat] && inventory[wing][flat].balcony > 0) {
+          return { className: 'badge-balcony', label: 'Extra Balcony' };
+        }
+      }
+      return { className: 'badge-normal', label: 'Normal' };
+    }
+
+    function setDefaultVisitingDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('visitingDate').value = today;
+    }
+
+    async function submitClientRecord() {
+      const busSelect = document.getElementById('businessSelect').value;
+      let finalBusiness = busSelect;
+      if (busSelect === 'Other') {
+        const customVal = document.getElementById('customBusiness').value.trim();
+        finalBusiness = customVal !== '' ? customVal : 'Other';
+      }
+
+      const pTypeSelect = document.getElementById('partyType').value;
+      let finalPartyType = pTypeSelect;
+      let brokerName = '';
+      let brokerMobile = '';
+
+      if (pTypeSelect === 'Reference') {
+        const refDetails = document.getElementById('referenceDetails').value.trim();
+        finalPartyType = refDetails ? `Reference - (${refDetails})` : 'Reference';
+      } else if (pTypeSelect === 'Party via Broker') {
+        brokerName = document.getElementById('brokerFullName').value.trim();
+        brokerMobile = document.getElementById('brokerMobile').value.trim();
+        let detailsStr = [];
+        if (brokerName) detailsStr.push(brokerName);
+        if (brokerMobile) detailsStr.push(brokerMobile);
+        finalPartyType = detailsStr.length > 0 ? `Party via Broker (${detailsStr.join(' - ')})` : 'Party via Broker';
+      }
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const moNo = document.getElementById('moNo').value.trim();
+
+      if (!firstName && !moNo) {
+        alert('Please enter at least a First Name or Mobile Number.');
+        return;
+      }
+
+      let targetRecord;
+      if (editingClientId !== null) {
+        const index = clientRecords.findIndex(c => String(c.id) === String(editingClientId));
+        if (index !== -1) {
+          targetRecord = {
+            ...clientRecords[index],
+            firstName: firstName,
+            lastName: document.getElementById('lastName').value.trim(),
+            gaam: document.getElementById('gaam').value.trim(),
+            taluka: document.getElementById('taluka').value.trim(),
+            district: document.getElementById('district').value.trim(),
+            business: finalBusiness,
+            moNo: moNo,
+            visitingDate: document.getElementById('visitingDate').value,
+            partyType: finalPartyType,
+            brokerName: brokerName,
+            brokerMobile: brokerMobile,
+            flatsInquired: [...currentSelectedFlats]
+          };
+          clientRecords[index] = targetRecord;
+          await pushRecordToSheet("update", targetRecord);
+        }
+      } else {
+        targetRecord = {
+          id: Date.now(),
+          firstName: firstName,
+          lastName: document.getElementById('lastName').value.trim(),
+          gaam: document.getElementById('gaam').value.trim(),
+          taluka: document.getElementById('taluka').value.trim(),
+          district: document.getElementById('district').value.trim(),
+          business: finalBusiness,
+          moNo: moNo,
+          visitingDate: document.getElementById('visitingDate').value,
+          partyType: finalPartyType,
+          brokerName: brokerName,
+          brokerMobile: brokerMobile,
+          flatsInquired: [...currentSelectedFlats],
+          status: "Brochure Sent in Whatsapp"
+        };
+        clientRecords.unshift(targetRecord);
+        await pushRecordToSheet("add", targetRecord);
+      }
+
+      localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+      clearClientForm();
+      renderClientTable();
+    }
+
+    function editClientRecord(id) {
+      const client = clientRecords.find(c => String(c.id) === String(id));
+      if (!client) return;
+
+      editingClientId = id;
+
+      document.getElementById('firstName').value = client.firstName || '';
+      document.getElementById('lastName').value = client.lastName || '';
+      document.getElementById('gaam').value = client.gaam || '';
+      document.getElementById('taluka').value = client.taluka || '';
+      document.getElementById('district').value = client.district || '';
+      document.getElementById('moNo').value = client.moNo || '';
+      document.getElementById('visitingDate').value = client.visitingDate || '';
+
+      if (['Diamond', 'Textile'].includes(client.business)) {
+        document.getElementById('businessSelect').value = client.business;
+        document.getElementById('customBusiness').value = '';
+      } else {
+        document.getElementById('businessSelect').value = 'Other';
+        document.getElementById('customBusiness').value = client.business || '';
+      }
+      toggleCustomBusiness();
+
+      const pt = client.partyType || 'Party';
+      if (pt.startsWith('Party via Broker')) {
+        document.getElementById('partyType').value = 'Party via Broker';
+        document.getElementById('brokerFullName').value = client.brokerName || '';
+        document.getElementById('brokerMobile').value = client.brokerMobile || '';
+      } else if (pt.startsWith('Reference')) {
+        document.getElementById('partyType').value = 'Reference';
+        let refName = pt.includes('(') ? pt.substring(pt.indexOf('(') + 1, pt.lastIndexOf(')')) : '';
+        document.getElementById('referenceDetails').value = refName;
+      } else if (pt === 'Broker') {
+        document.getElementById('partyType').value = 'Broker';
+      } else {
+        document.getElementById('partyType').value = 'Party';
+      }
+      toggleTypeDetails();
+
+      currentSelectedFlats = client.flatsInquired ? [...client.flatsInquired] : [];
+      renderSelectedFlatBadges();
+
+      document.getElementById('formHeader').innerText = 'Edit Customer Record';
+      document.getElementById('submitBtn').innerText = 'UPDATE CLIENT RECORD';
+      document.getElementById('cancelEditBtn').style.display = 'block';
+
+      document.getElementById('clientFormCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function clearClientForm() {
+      editingClientId = null;
+      ['firstName', 'lastName', 'gaam', 'taluka', 'district', 'customBusiness', 'referenceDetails', 'brokerFullName', 'brokerMobile', 'moNo'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('businessSelect').value = 'Diamond';
+      document.getElementById('partyType').value = 'Party';
+      toggleCustomBusiness();
+      toggleTypeDetails();
+      currentSelectedFlats = [];
+      renderSelectedFlatBadges();
+      setDefaultVisitingDate();
+
+      document.getElementById('formHeader').innerText = 'Add New Customer Record';
+      document.getElementById('submitBtn').innerText = 'SUBMIT & SAVE RECORD';
+      document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    function sendWhatsAppMessage(id) {
+      const client = clientRecords.find(c => String(c.id) === String(id));
+      if (!client) return;
+
+      let cleanMobile = (client.moNo || '').replace(/\D/g, '');
+      if (!cleanMobile) {
+        alert('Mobile number is missing for this client.');
+        return;
+      }
+
+      if (cleanMobile.length === 10) {
+        cleanMobile = '91' + cleanMobile;
+      }
+
+      const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
+      const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
+
+      const handPointDown = String.fromCodePoint(0x1F447);
+      const checkMark     = String.fromCodePoint(0x2705);
+      const foldedHands   = String.fromCodePoint(0x1F64F);
+
+      const gujaratiMsg = `નમસ્તે ${clientName},\n\n` +
+                          `અમારા પ્રોજેક્ટ *ડિવાઈન રિવેરા* માં રસ દર્શાવવા બદલ આભાર!\n\n` +
+                          `${handPointDown} પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):\n${brochurePdfUrl}\n\n` +
+                          `${checkMark} અન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\n\n` +
+                          `આપનો દિવસ શુભ રહે!\n` +
+                          `${foldedHands}\n` +
+                          `આભાર!`;
+
+      const encodedMsg = encodeURIComponent(gujaratiMsg);
+      const waUrl = `https://wa.me/${cleanMobile}?text=${encodedMsg}`;
+      window.open(waUrl, '_blank');
+    }
+
+    function renderClientTable() {
+      const query = document.getElementById('searchQuery').value.toLowerCase();
+      const tbody = document.getElementById('clientTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = clientRecords.filter(c => {
+        const flatText = (c.flatsInquired || []).join(' ');
+        return (c.firstName && c.firstName.toLowerCase().includes(query)) ||
+               (c.lastName && c.lastName.toLowerCase().includes(query)) ||
+               (c.business && c.business.toLowerCase().includes(query)) ||
+               (c.moNo && String(c.moNo).includes(query)) ||
+               (c.gaam && c.gaam.toLowerCase().includes(query)) ||
+               (c.partyType && c.partyType.toLowerCase().includes(query)) ||
+               (c.brokerName && c.brokerName.toLowerCase().includes(query)) ||
+               (c.brokerMobile && String(c.brokerMobile).includes(query)) ||
+               (c.status && c.status.toLowerCase().includes(query)) ||
+               (c.visitingDate && c.visitingDate.toLowerCase().includes(query)) ||
+               (flatText.toLowerCase().includes(query));
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No client records found</td></tr>';
+        return;
+      }
+
+      filtered.forEach(c => {
+        const tr = document.createElement('tr');
+        
+        let statusOptionsHtml = '';
+        statusOptions.forEach(opt => {
+          const selected = (c.status === opt) ? 'selected' : '';
+          statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
+        });
+
+        let flatBadgesHtml = '';
+        if (c.flatsInquired && c.flatsInquired.length > 0) {
+          c.flatsInquired.forEach(fStr => {
+            const bInfo = getFlatBadgeType(fStr);
+            flatBadgesHtml += `<span class="flat-badge ${bInfo.className}">${fStr}</span> `;
+          });
+        } else {
+          flatBadgesHtml = '-';
+        }
+
         tr.innerHTML = `
-          <td>${lead.firstName || '-'}</td>
-          <td>${lead.lastName || '-'}</td>
-          <td>${lead.partyType || '-'}</td>
-          <td>${lead.business || '-'}</td>
-          <td>${lead.moNo || '-'}</td>
-          <td>${lead.gaam || '-'}</td>
-          <td>${lead.taluka || '-'}</td>
-          <td>${lead.district || '-'}</td>
-          <td><button class="status-btn">Brochure Sent</button></td>
+          <td>${c.firstName || '-'}</td>
+          <td>${c.lastName || '-'}</td>
+          <td>${c.partyType || '-'}</td>
+          <td>${c.business || '-'}</td>
+          <td>${c.moNo || '-'}</td>
+          <td>${c.gaam || '-'}</td>
+          <td>
+            <select class="table-select" onchange="updateClientStatus('${c.id}', this.value)">
+              ${statusOptionsHtml}
+            </select>
+          </td>
+          <td>${c.visitingDate || '-'}</td>
+          <td>${flatBadgesHtml}</td>
+          <td>
+            <div class="action-cell">
+              <button class="btn-whatsapp" onclick="sendWhatsAppMessage('${c.id}')" title="Send Gujarati WhatsApp Message">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                WhatsApp
+              </button>
+              <button class="btn-edit" onclick="editClientRecord('${c.id}')">Edit</button>
+              <button class="delete-btn" onclick="deleteClient('${c.id}')">Delete</button>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // Client-side Filter Search
-    function filterTable() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#tableBody tr");
-
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(input) ? "" : "none";
-      });
-    }
-
-    // CSV Export Handler
-    function exportToCSV() {
-      const table = document.getElementById("leadsTable");
-      let csv = [];
-      for (let i = 0; i < table.rows.length; i++) {
-        let row = [], cols = table.rows[i].querySelectorAll("td, th");
-        for (let j = 0; j < cols.length - 1; j++) { // Exclude action column
-          row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
-        }
-        csv.push(row.join(","));
+    async function updateClientStatus(id, newStatus) {
+      const target = clientRecords.find(c => String(c.id) === String(id));
+      if (target) {
+        target.status = newStatus;
+        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        await pushRecordToSheet("update", target);
       }
-      
-      const csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-      const downloadLink = document.createElement("a");
-      downloadLink.download = "Leads_Database.csv";
-      downloadLink.href = window.URL.createObjectURL(csvFile);
-      downloadLink.click();
     }
+
+    async function deleteClient(id) {
+      if (confirm('Are you sure you want to delete this record?')) {
+        clientRecords = clientRecords.filter(c => String(c.id) !== String(id));
+        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        if (editingClientId === id) {
+          clearClientForm();
+        }
+        renderClientTable();
+        await pushRecordToSheet("delete", id);
+      }
+    }
+
+    function exportToCSV() {
+      if (clientRecords.length === 0) {
+        alert('No records to export.');
+        return;
+      }
+
+      let csv = 'First Name,Last Name,Type,Broker Name,Broker Mobile,Business,Gaam,Taluka,District,Mo No,Visiting Date,Flats Inquired,Status\n';
+      clientRecords.forEach(c => {
+        const flatsStr = (c.flatsInquired || []).join('; ');
+        const bName = c.brokerName || '';
+        const bMobile = c.brokerMobile || '';
+        csv += `"${c.firstName}","${c.lastName}","${c.partyType}","${bName}","${bMobile}","${c.business}","${c.gaam}","${c.taluka}","${c.district}","${c.moNo}","${c.visitingDate}","${flatsStr}","${c.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'Client_Leads.csv');
+      a.click();
+    }
+
+    ['baseArea', 'balconyArea', 'ratePerSqFt'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculate);
+    });
+
+    function switchTab(tabId, evt) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      evt.target.classList.add('active');
+    }
+
+    window.onload = function() {
+      onBuildingChange();
+      populatePrefFlatDropdown();
+      setDefaultVisitingDate();
+      loadRecordsFromSheet();
+    };
   </script>
 </body>
 </html>
