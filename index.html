@@ -1098,33 +1098,45 @@
       const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      const gujaratiMsg = `નમસ્તે ${clientName}, 🙏
+      // Emojis defined using safe Unicode escapes to prevent character corruption
+      const foldHands  = "\u{1F64F}";
+      const sparkle    = "\u{2728}";
+      const building   = "\u{1F3E2}";
+      const crane      = "\u{1F3D7}\u{FE0F}";
+      const tree       = "\u{1F333}";
+      const pin        = "\u{1F4CD}";
+      const cityscape  = "\u{1F3D9}\u{FE0F}";
+      const pointDown  = "\u{1F447}";
+      const checkMark  = "\u{2705}";
+      const phone      = "\u{1F4DE}";
+      const bouquet    = "\u{1F490}";
+
+      const gujaratiMsg = `નમસ્તે ${clientName}, ${foldHands}
 
 અમારા પ્રીમિયમ પ્રોજેક્ટ *ડિવાઈન રિવેરા (Divine Rivera)* માં રસ દર્શાવવા બદલ ખૂબ ખૂબ આભાર!
 
-✨ *પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*
+${sparkle} *પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*
 
-🏢 ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ
-🏗️ સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C નો Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ
-🌳 S.M.C ના નવા વિશાળ ઓક્સિજન પાર્ક ની એકદમ બાજુમાં
-📍 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી
-🏙️ રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ
+${building} ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ
+${crane} સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C ની Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ
+${tree} S.M.C ના નવા વિશાળ ગાર્ડન ની એકદમ બાજુમાં
+${pin} 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી
+${cityscape} રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ
 
-👇 *પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*
+${pointDown} *પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*
 ${brochurePdfUrl}
 
-✅ *વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*
+${checkMark} *વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*
 
-📞 સંપર્ક: 9998293938
+${phone} સંપર્ક: 9998293938
 
 આપનો દિવસ શુભ રહે!
-આભાર! 💐`;
+આભાર! ${bouquet}`;
 
       const encodedMsg = encodeURIComponent(gujaratiMsg);
       const waUrl = `https://wa.me/${cleanMobile}?text=${encodedMsg}`;
       window.open(waUrl, '_blank');
     }
-
     function toggleViewMore() {
       if (visibleRecordCount >= clientRecords.length) {
         visibleRecordCount = 10;
