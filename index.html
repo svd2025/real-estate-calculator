@@ -655,15 +655,15 @@
           <table>
             <thead>
               <tr>
+                <th>Visiting Date</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Type</th>
                 <th>Business</th>
+                <th>Flat Preference</th>
                 <th>Mo No</th>
                 <th>Gaam</th>
                 <th>Live Status Update</th>
-                <th>Visiting Date</th>
-                <th>Flat Preference</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -1194,10 +1194,12 @@
         }
 
         tr.innerHTML = `
+          <td>${formatDateToDMY(c.visitingDate)}</td>
           <td>${c.firstName || '-'}</td>
           <td>${c.lastName || '-'}</td>
           <td>${c.partyType || '-'}</td>
           <td>${c.business || '-'}</td>
+          <td>${flatBadgesHtml}</td>
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
           <td>
@@ -1205,8 +1207,6 @@
               ${statusOptionsHtml}
             </select>
           </td>
-          <td>${formatDateToDMY(c.visitingDate)}</td>
-          <td>${flatBadgesHtml}</td>
           <td>
             <div class="action-cell">
               <button class="btn-whatsapp" onclick="sendWhatsAppMessage('${c.id}')" title="Send Gujarati WhatsApp Message">
