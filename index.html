@@ -358,6 +358,7 @@
       font-size: 0.85rem;
       border-radius: 4px;
       height: auto;
+      max-width: 180px;
     }
 
     .action-cell {
@@ -735,7 +736,7 @@
 
     const statusOptions = [
       "Brochure Sent in Whatsapp", "Call Busy", "Call Cut", "Follow-up Required",
-      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
+      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi", "Note"
     ];
 
     let clientRecords = [];
@@ -1171,17 +1172,24 @@
         return;
       }
 
-      // If user is searching, show all matching results; otherwise limit by visibleRecordCount
       const displayRecords = query.trim() !== "" ? filtered : filtered.slice(0, visibleRecordCount);
 
       displayRecords.forEach(c => {
         const tr = document.createElement('tr');
         
         let statusOptionsHtml = '';
+        let matchedStandardStatus = false;
+
         statusOptions.forEach(opt => {
           const selected = (c.status === opt) ? 'selected' : '';
+          if (selected) matchedStandardStatus = true;
           statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
         });
+
+        // Handle displaying custom note content in the dropdown UI if custom note exists
+        if (!matchedStandardStatus && c.status) {
+          statusOptionsHtml += `<option value="${c.status}" selected>${c.status}</option>`;
+        }
 
         let flatBadgesHtml = '';
         if (c.flatsInquired && c.flatsInquired.length > 0) {
@@ -1203,7 +1211,7 @@
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
           <td>
-            <select class="table-select" onchange="updateClientStatus('${c.id}', this.value)">
+            <select class="table-select" onchange="updateClientStatus('${c.id}', this)">
               ${statusOptionsHtml}
             </select>
           </td>
@@ -1221,7 +1229,6 @@
         tbody.appendChild(tr);
       });
 
-      // Manage View More button visibility & text
       if (query.trim() !== "" || filtered.length <= 10) {
         viewMoreBtn.style.display = 'none';
       } else {
@@ -1234,13 +1241,26 @@
       }
     }
 
-    async function updateClientStatus(id, newStatus) {
+    async function updateClientStatus(id, selectElement) {
+      let selectedVal = selectElement.value;
       const target = clientRecords.find(c => String(c.id) === String(id));
-      if (target) {
-        target.status = newStatus;
-        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
-        await pushRecordToSheet("update", target);
+      
+      if (!target) return;
+
+      if (selectedVal === 'Note') {
+        const customNote = prompt("Enter custom note for this lead:");
+        if (customNote !== null && customNote.trim() !== '') {
+          selectedVal = `Note: ${customNote.trim()}`;
+        } else {
+          renderClientTable();
+          return;
+        }
       }
+
+      target.status = selectedVal;
+      localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+      renderClientTable();
+      await pushRecordToSheet("update", target);
     }
 
     async function deleteClient(id) {
