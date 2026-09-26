@@ -161,9 +161,7 @@
       align-items: flex-end;
     }
 
-    .row-2 .form-group {
-      flex: 1;
-    }
+    .row-2 .form-group { flex: 1; }
 
     .row-3 {
       display: flex;
@@ -171,9 +169,7 @@
       align-items: flex-end;
     }
 
-    .row-3 .form-group {
-      flex: 1;
-    }
+    .row-3 .form-group { flex: 1; }
 
     .dynamic-fields-row {
       display: flex;
@@ -231,39 +227,11 @@
       transition: background-color 0.2s ease;
     }
 
-    .btn-primary {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background-color: #1557b0;
-    }
-
-    .btn-secondary {
-      background-color: #f1f3f4;
-      color: var(--primary-color);
-      border: 1px solid var(--border-color);
-      margin-top: 10px;
-    }
-
-    .btn-secondary:hover {
-      background-color: #e8f0fe;
-    }
-
-    .btn-success {
-      background-color: var(--accent-green);
-      color: white;
-    }
-
-    .btn-danger {
-      background-color: var(--btn-danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background-color: var(--btn-danger-hover);
-    }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-primary:hover { background-color: #1557b0; }
+    .btn-success { background-color: var(--accent-green); color: white; }
+    .btn-danger { background-color: var(--btn-danger); color: white; }
+    .btn-danger:hover { background-color: var(--btn-danger-hover); }
 
     .btn-whatsapp {
       background-color: var(--whatsapp-green);
@@ -277,11 +245,10 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      text-decoration: none;
     }
 
-    .btn-whatsapp:hover {
-      background-color: var(--whatsapp-hover);
-    }
+    .btn-whatsapp:hover { background-color: var(--whatsapp-hover); }
 
     .btn-edit {
       background-color: var(--btn-edit);
@@ -294,9 +261,7 @@
       font-weight: 600;
     }
 
-    .btn-edit:hover {
-      background-color: var(--btn-edit-hover);
-    }
+    .btn-edit:hover { background-color: var(--btn-edit-hover); }
 
     .tabs {
       display: flex;
@@ -317,17 +282,17 @@
       color: white;
     }
 
-    .tab-content {
-      display: none;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .tab-content.active {
-      display: block;
-    }
-
+    /* SCROLLBAR & CONTAINED CONTAINER FIX */
     .table-wrapper {
+      max-height: 480px;
       overflow-x: auto;
+      overflow-y: auto;
       margin-top: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
     }
 
     table {
@@ -344,21 +309,21 @@
     }
 
     th {
+      position: sticky;
+      top: 0;
       background-color: #e8f0fe;
       color: var(--primary-color);
       font-weight: 600;
+      z-index: 10;
     }
 
-    tr:nth-child(even) {
-      background-color: #f8f9fa;
-    }
+    tr:nth-child(even) { background-color: #f8f9fa; }
 
     .table-select {
       padding: 4px 6px;
       font-size: 0.85rem;
       border-radius: 4px;
       height: auto;
-      max-width: 180px;
     }
 
     .action-cell {
@@ -384,15 +349,9 @@
     }
 
     @media (max-width: 480px) {
-      .flat-selector-box {
-        flex-wrap: wrap;
-      }
-      .flat-selector-box select {
-        flex: 1 1 40% !important;
-      }
-      .btn-add-flat {
-        width: 100%;
-      }
+      .flat-selector-box { flex-wrap: wrap; }
+      .flat-selector-box select { flex: 1 1 40% !important; }
+      .btn-add-flat { width: 100%; }
     }
 
     .btn-add-flat {
@@ -656,15 +615,15 @@
           <table>
             <thead>
               <tr>
-                <th>Visiting Date</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Type</th>
                 <th>Business</th>
-                <th>Flat Preference</th>
                 <th>Mo No</th>
                 <th>Gaam</th>
                 <th>Live Status Update</th>
+                <th>Visiting Date</th>
+                <th>Flat Preference</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -672,15 +631,12 @@
           </table>
         </div>
 
-        <button id="viewMoreBtn" class="btn btn-secondary" onclick="toggleViewMore()" style="display: none;">View More</button>
-
         <button class="btn btn-success" onclick="exportToCSV()" style="margin-top: 14px;">EXPORT TO CSV / EXCEL</button>
       </div>
     </div>
   </div>
 
   <script>
-    // GOOGLE APPS SCRIPT WEB APP URL
     const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbweATmPUGlMBdqgJ03tyIylJQb-CcdPPxw-reM5LdeI18cnnf0639-ODlmdD6bWvJlTEQ/exec";
 
     const inventory = {
@@ -736,29 +692,12 @@
 
     const statusOptions = [
       "Brochure Sent in Whatsapp", "Call Busy", "Call Cut", "Follow-up Required",
-      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi", "Note"
+      "Visit Scheduled", "Rubru Aavshe", "Not Interested", "Ganatri Nathi"
     ];
 
     let clientRecords = [];
     let currentSelectedFlats = [];
     let editingClientId = null;
-    let visibleRecordCount = 10;
-
-    function formatDateToDMY(dateStr) {
-      if (!dateStr || dateStr === '-') return '-';
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) {
-        const parts = String(dateStr).split('T')[0].split('-');
-        if (parts.length === 3) {
-          return `${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}-${parts[0]}`;
-        }
-        return dateStr;
-      }
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}-${month}-${year}`;
-    }
 
     async function loadRecordsFromSheet() {
       document.getElementById('syncStatus').innerText = "Syncing with Google Sheet...";
@@ -1098,57 +1037,36 @@
       document.getElementById('cancelEditBtn').style.display = 'none';
     }
 
-    function sendWhatsAppMessage(id) {
-      const client = clientRecords.find(c => String(c.id) === String(id));
-      if (!client) return;
-
-      let cleanMobile = (client.moNo || '').replace(/\D/g, '');
-      if (!cleanMobile) {
-        alert('Mobile number is missing for this client.');
-        return;
-      }
+    // WHATSAPP HELPER FUNCTION
+    function getWhatsAppUrl(firstName, rawMobile) {
+      let cleanMobile = String(rawMobile || '').replace(/\D/g, '');
+      if (!cleanMobile) return '#';
 
       if (cleanMobile.length === 10) {
         cleanMobile = '91' + cleanMobile;
       }
 
-      const clientName = client.firstName ? client.firstName : 'ગ્રાહક';
+      const clientName = firstName ? firstName : 'ગ્રાહક';
       const brochurePdfUrl = "https://bit.ly/DIVINERIVERA"; 
 
-      const gujaratiMsg = 
-        "નમસ્તે " + clientName + ",\n\n" +
-        "અમારા પ્રીમિયમ પ્રોજેક્ટ *ડિવાઈન રિવેરા (Divine Rivera)* માં રસ દર્શાવવા બદલ ખૂબ ખૂબ આભાર!\n\n" +
-        "*પ્રોજેક્ટની મુખ્ય ખાસિયતો (Project Highlights):*\n\n" +
-        "- ૩ BHK + Pent House પ્રીમિયમ લક્ઝુરિયસ રિવર વ્યુ એપાર્ટમેન્ટ્સ\n" +
-        "- સુરત માં પહેલીવાર બહારની બધીજ દીવાલ R.C.C ની Mi-Van ટેક્નોલોજી દ્વારા મજબુત બાંધકામ ધરાવતા 21 માળ ના એકમાત્ર એપાર્ટમેન્ટ\n" +
-        "- S.M.C ના નવા વિશાળ ગાર્ડન ની એકદમ બાજુમાં\n" +
-        "- 100 ફુટ ના વિશાળ રોડ પર મોકાનું લોકેશન અને બહેતર કનેક્ટિવિટી\n" +
-        "- રિવર વ્યુ વિશાળ પ્રાઇવેટ બાલ્કની સાથે ડેક બાલ્કની ફ્લેટ્સ\n\n" +
-        "*પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):*\n" +
-        brochurePdfUrl + "\n\n" +
-        "*વધુ માહિતી અથવા સાઇટ મુલાકાત (Site Visit) માટે:*\n\n" +
-        "સંપર્ક: 9998293938\n\n" +
-        "આપનો દિવસ શુભ રહે!\n" +
-        "આભાર!";
+      const handPointDown = String.fromCodePoint(0x1F447);
+      const checkMark     = String.fromCodePoint(0x2705);
+      const foldedHands   = String.fromCodePoint(0x1F64F);
 
-      const encodedMsg = encodeURIComponent(gujaratiMsg);
-      const waUrl = `https://wa.me/${cleanMobile}?text=${encodedMsg}`;
-      window.open(waUrl, '_blank');
-    }
+      const gujaratiMsg = `નમસ્તે ${clientName},\n\n` +
+                          `અમારા પ્રોજેક્ટ *ડિવાઈન રિવેરા* માં રસ દર્શાવવા બદલ આભાર!\n\n` +
+                          `${handPointDown} પ્રોજેક્ટ બ્રોશર પીડીએફ (PDF):\n${brochurePdfUrl}\n\n` +
+                          `${checkMark} અન્ય કોઈ પણ પ્રશ્નો માટે તમે અમારો સંપર્ક 9998293938 પર કરી શકો છો.\n\n` +
+                          `આપનો દિવસ શુભ રહે!\n` +
+                          `${foldedHands}\n` +
+                          `આભાર!`;
 
-    function toggleViewMore() {
-      if (visibleRecordCount >= clientRecords.length) {
-        visibleRecordCount = 10;
-      } else {
-        visibleRecordCount += 10;
-      }
-      renderClientTable();
+      return `https://api.whatsapp.com/send?phone=${cleanMobile}&text=${encodeURIComponent(gujaratiMsg)}`;
     }
 
     function renderClientTable() {
       const query = document.getElementById('searchQuery').value.toLowerCase();
       const tbody = document.getElementById('clientTableBody');
-      const viewMoreBtn = document.getElementById('viewMoreBtn');
       tbody.innerHTML = '';
 
       const filtered = clientRecords.filter(c => {
@@ -1168,28 +1086,17 @@
 
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">No client records found</td></tr>';
-        viewMoreBtn.style.display = 'none';
         return;
       }
 
-      const displayRecords = query.trim() !== "" ? filtered : filtered.slice(0, visibleRecordCount);
-
-      displayRecords.forEach(c => {
+      filtered.forEach(c => {
         const tr = document.createElement('tr');
         
         let statusOptionsHtml = '';
-        let matchedStandardStatus = false;
-
         statusOptions.forEach(opt => {
           const selected = (c.status === opt) ? 'selected' : '';
-          if (selected) matchedStandardStatus = true;
           statusOptionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
         });
-
-        // Handle displaying custom note content in the dropdown UI if custom note exists
-        if (!matchedStandardStatus && c.status) {
-          statusOptionsHtml += `<option value="${c.status}" selected>${c.status}</option>`;
-        }
 
         let flatBadgesHtml = '';
         if (c.flatsInquired && c.flatsInquired.length > 0) {
@@ -1201,26 +1108,28 @@
           flatBadgesHtml = '-';
         }
 
+        const waUrl = getWhatsAppUrl(c.firstName, c.moNo);
+
         tr.innerHTML = `
-          <td>${formatDateToDMY(c.visitingDate)}</td>
           <td>${c.firstName || '-'}</td>
           <td>${c.lastName || '-'}</td>
           <td>${c.partyType || '-'}</td>
           <td>${c.business || '-'}</td>
-          <td>${flatBadgesHtml}</td>
           <td>${c.moNo || '-'}</td>
           <td>${c.gaam || '-'}</td>
           <td>
-            <select class="table-select" onchange="updateClientStatus('${c.id}', this)">
+            <select class="table-select" onchange="updateClientStatus('${c.id}', this.value)">
               ${statusOptionsHtml}
             </select>
           </td>
+          <td>${c.visitingDate || '-'}</td>
+          <td>${flatBadgesHtml}</td>
           <td>
             <div class="action-cell">
-              <button class="btn-whatsapp" onclick="sendWhatsAppMessage('${c.id}')" title="Send Gujarati WhatsApp Message">
+              <a class="btn-whatsapp" href="${waUrl}" target="_blank" title="Send Gujarati WhatsApp Message">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
                 WhatsApp
-              </button>
+              </a>
               <button class="btn-edit" onclick="editClientRecord('${c.id}')">Edit</button>
               <button class="delete-btn" onclick="deleteClient('${c.id}')">Delete</button>
             </div>
@@ -1228,39 +1137,15 @@
         `;
         tbody.appendChild(tr);
       });
-
-      if (query.trim() !== "" || filtered.length <= 10) {
-        viewMoreBtn.style.display = 'none';
-      } else {
-        viewMoreBtn.style.display = 'block';
-        if (visibleRecordCount >= filtered.length) {
-          viewMoreBtn.innerText = 'Show Less';
-        } else {
-          viewMoreBtn.innerText = `View More (${filtered.length - displayRecords.length} remaining)`;
-        }
-      }
     }
 
-    async function updateClientStatus(id, selectElement) {
-      let selectedVal = selectElement.value;
+    async function updateClientStatus(id, newStatus) {
       const target = clientRecords.find(c => String(c.id) === String(id));
-      
-      if (!target) return;
-
-      if (selectedVal === 'Note') {
-        const customNote = prompt("Enter custom note for this lead:");
-        if (customNote !== null && customNote.trim() !== '') {
-          selectedVal = `Note: ${customNote.trim()}`;
-        } else {
-          renderClientTable();
-          return;
-        }
+      if (target) {
+        target.status = newStatus;
+        localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
+        await pushRecordToSheet("update", target);
       }
-
-      target.status = selectedVal;
-      localStorage.setItem('realEstateClients', JSON.stringify(clientRecords));
-      renderClientTable();
-      await pushRecordToSheet("update", target);
     }
 
     async function deleteClient(id) {
